@@ -1,7 +1,6 @@
 float angle;
 
 Dot[] pool; //all are here constantly
-Dot[] shape; //added when necessary
 int dots = 40;
 int dots_in_pool = dots;
 int hax = 0;
@@ -25,7 +24,6 @@ class Dot {
 }
 
 float saltShaker(float in) {
-  //float in_mod = in%((int)in);
   return (in) * (0.5 + 0.5*noise(hax));
 }
 float sinEase(float in){
@@ -95,10 +93,10 @@ void draw() {
     else {
       x += shape_coeff * shape_xs[shape_i];
       y += shape_coeff * shape_ys[shape_i];
-      y += shape_coeff * 1;
+      z += shape_coeff * 1;
       shape_i ++;
     }
-    translate(1000 * x + noise_coeff*random(10), -100 * y + noise_coeff*random(10), -1000 * z + noise_coeff*random(10));
+    translate(1000 * x + noise_coeff*random(10), -100 * y + noise_coeff*random(10), -400 * z + noise_coeff*random(10));
     sphere(20);
     popMatrix();
   }
