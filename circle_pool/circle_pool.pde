@@ -10,13 +10,17 @@ import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 
 final int layers = 7;
-final int sphereRadius = 20;
-final int padding = 5;
-final float rotateSpeed = 0.05;
+final int sphereRadius = 5;
+final int padding = 10;
+final float rotateSpeed = 30;
 
-final float minOffset = 2 * sphereRadius + 1;
+final float minOffset = 2 * sphereRadius + padding;
 
-final PVector[][] shapes = new PVector[8][];
+final Node[] nodes = new Node[2];
+final Node[] frame = new Node[4];
+
+float beat = 0.0;
+int BPM = 105;
 
 Dot[] dots;
 Dot[][] slotsUsed = new Dot[layers][];
@@ -24,13 +28,17 @@ int[] maxCounts = new int[layers];
 
 PeasyCam cam;
 
-final float startY = -400;
+Moonlander moonlander;
+
+final float startY = -40;
 
 void setup() {
   size(800, 600, P3D);
+  moonlander = Moonlander.initWithSoundtrack(this, "graffathonsong.mp3", BPM, 8);
   //fullScreen(P3D);
   
   // init fancy cubes for the shapes
+  /*
   for (int i = 0; i < shapes.length; i++) {
     PVector coords[] = new PVector[8 + 12 * i];
     float off = 3 * sphereRadius;
@@ -60,11 +68,14 @@ void setup() {
     }
     shapes[i] = coords;
   }
+  */
+  createNodes();
   
   colorMode(HSB, 360, 100, 100);
   cam = new PeasyCam(this, 0, startY, 0, 400);
   cam.setSuppressRollRotationMode();
   // calculate max number of dots
+
   int totalCount = 0;
   for (int layer = 0; layer < layers; layer++) {
     int count = 1;
@@ -79,6 +90,7 @@ void setup() {
   println("total dots: " + totalCount);
   // init the dots in the pool
   dots = new Dot[totalCount];
+  
   for (int layer = 0, i = 0; layer < layers; layer++) {
     slotsUsed[layer] = new Dot[maxCounts[layer]];
     for (int j = 0; j < maxCounts[layer]; j++) {
@@ -90,6 +102,29 @@ void setup() {
       slotsUsed[layer][j] = dot;
     }
   }
+  
+  moonlander.start("localhost", 1339, "synkkifilu");
+  setShape(nodes);
+}
+
+void createNodes() {
+  nodes[0] = new Node(new PVector(20.0, -100.0, 20.0));
+  nodes[1] = new Node(new PVector(-20.0, -100.0, 20.0));
+  
+  frame[0] = new Node(new PVector(20.0, -100.0, 20.0));
+  frame[1] = new Node(new PVector(-20.0, -100.0, 20.0));
+  frame[2] = new Node(new PVector(20.0, -100.0, -20.0));
+  frame[3] = new Node(new PVector(-20.0, -100.0, -20.0));
+  
+  frame[0].next_node = frame[1];
+  frame[1].next_node = frame[3];
+  frame[2].next_node = frame[0];
+  frame[3].next_node = frame[2];
+
+  nodes[0].to_node = frame[0].next_node;
+  nodes[1].to_node = frame[1].next_node;
+  nodes[0].from_node = frame[0];
+  nodes[1].from_node = frame[1];
 }
 
 float optimalFrac(boolean min, int[] counts) {
@@ -103,7 +138,7 @@ float optimalFrac(boolean min, int[] counts) {
   return bestFrac;
 }
 
-void setShape(PVector[] shape) {
+void setShape(Node[] shape) {
   int[] counts = new int[layers];
   int usedCount = 0;
   // move the end locations to be starts and count dots starting on each layer
@@ -156,7 +191,7 @@ void setShape(PVector[] shape) {
     }
     // use the dot
     dot.end.pool = false;
-    dot.end.pos = shape[shaped];
+    dot.end.node = shape[shaped];
     // update counts
     if (dot.start.pool) {
       counts[dot.end.layer]--;
@@ -202,12 +237,16 @@ void setShape(PVector[] shape) {
 PVector resolvePoolLoc(int layer, float x) {
   float radius = layer * minOffset;
   float speed = layer == 0 ? 0 : pow(-1, layer) * rotateSpeed / radius;
-  float angle = TAU * x / maxCounts[layer] + speed * millis();
+  float angle = TAU * x / maxCounts[layer] + speed * (float) moonlander.getCurrentTime();
   return new PVector(sin(angle) * radius, 0, cos(angle) * radius);
 }
 
 PVector resolveLoc(Location loc) {
-  return loc.pool ? resolvePoolLoc(loc.layer, loc.fracSlot) : loc.pos;
+  if (!loc.pool) {
+    loc.node.update(beat);
+  }
+
+  return loc.pool ? resolvePoolLoc(loc.layer, loc.fracSlot) : loc.node.pos;
 }
 
 int shapeNo = 0;
@@ -217,6 +256,7 @@ boolean debugger = false;
 final int period = 3000;
 
 void draw() {
+  moonlander.update();
   background(255);
   noLights();
   ambientLight(0, 0, 50);
@@ -224,11 +264,16 @@ void draw() {
   fill(128);
   noStroke();
   
+  beat = ((float)(moonlander.getCurrentTime()*BPM)/60.0) % 1;
+  
+  print(beat);
+  /*
   if (millis() / period > shapeNo) {
     shapeNo++;
-    setShape(shapes[(int) random(shapes.length)]);
+    setShape(nodes);
   }
-  float phase = millis() % period > period / 2 ? 1 : (1 - cos(millis() / (float) period * TAU)) / 2;
+  */
+  float phase = millis() /*% period*/ > period / 2 ? 1 : (1 - cos(millis() / (float) period * TAU)) / 2;
   
   if (debugger) {
     for (int i = 0; i < dots.length; i++) println(dots[i]);
@@ -236,7 +281,7 @@ void draw() {
   }
   
   for (int i = 0; i < dots.length; i++) {
-    Dot dot = dots[i];
+    Dot dot = dots[i];  
     PVector loc;
     if (dot.start.pool && dot.end.pool) {
       // in-pool moves should be radial
@@ -245,15 +290,24 @@ void draw() {
       // out-of-pool moves should be linear
       PVector startLoc = resolveLoc(dot.start);
       PVector endLoc = resolveLoc(dot.end);
+
       loc = new PVector(map(phase, 0, 1, startLoc.x, endLoc.x),
           map(phase, 0, 1, startLoc.y, endLoc.y),
           map(phase, 0, 1, startLoc.z, endLoc.z));
     }
+    dot.cache_loc = loc;
     pushMatrix();
     translate(loc.x, loc.y, loc.z);
     sphere(sphereRadius);
-    popMatrix();
+    popMatrix(); 
   }
+  
+  for (int i = 0; i < dots.length; i++) {
+    for (Dot d : dots[i].connections) {
+      line(dots[i].cache_loc.x, dots[i].cache_loc.y, dots[i].cache_loc.z, d.cache_loc.x, d.cache_loc.y, d.cache_loc.z); 
+    }
+  }
+  
 }
 
 void keyPressed() {
