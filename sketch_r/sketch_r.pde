@@ -1,3 +1,9 @@
+import moonlander.library.*;
+
+import ddf.minim.*;
+
+Moonlander moonlander;
+
 float angle;
 
 Dot[] pool; //all are here constantly
@@ -102,6 +108,8 @@ class Dot {
 }
 
 void setup() {
+  moonlander = Moonlander.initWithSoundtrack(this, "graffathonsong.mp3", 105, 8);
+
   size(400, 400, P3D);
   noStroke();
   randomSeed(1337);
@@ -116,9 +124,11 @@ void setup() {
     all_pools_end[0][i] = the_new_one;
   }
   resetPools();//sets the start versions of the arrays and everything
+  moonlander.start();
 }
 
 void draw() {
+  moonlander.update();
   hax ++;
   if(hax%200==0){
     int[] distr = {32,8,0,0, 0,0,0,0, 0,0};
@@ -284,4 +294,4 @@ void shuffle(int[] arr){
        arr[i] = arr[pick]; 
        arr[pick]= temp; 
     }
-}
+}  
