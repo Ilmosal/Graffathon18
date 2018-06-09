@@ -208,7 +208,7 @@ float[][] getDotString(String stringy){
   stringy = stringy.toLowerCase();
   float[] x_points = {};
   float[] y_points = {};
-  float offset = -2;
+  float offset = -1.5;
   char prev = ' ';
   for (int i=0;i<stringy.length();i++){
     char curr = stringy.charAt(i);
