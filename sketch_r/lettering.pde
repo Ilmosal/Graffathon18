@@ -199,7 +199,6 @@ float[] moveLetter(float[] points, float offset_x){
 }
 
 float getKerning(char prev, char curr){
-  println(prev, curr);
   if (prev == ' ' || curr == ' ') return 1.5;
   return kernings[prev - 'a'][curr - 'a'];
 }
@@ -214,22 +213,6 @@ float[][] getDotString(String stringy){
     char curr = stringy.charAt(i);
     float[][] letter = getLetter(curr);
     float kerning = getKerning(prev, curr);
-    /*
-    float kerning = 1.5;
-    if(curr == 'i' || curr =='I') {
-      kerning = 1.25;
-      offset -= 0.25;
-    } 
-    else if (curr == 'p'){
-      kerning = 1.3;
-    }
-    else if( (prev == 'r' || prev == 'p' || prev == 'b') && (curr == 'y' || curr == 't')){
-      offset -= 0.3;
-    }
-    else if( (prev == 'y') && curr == 'a'){
-      offset -= 0.25;
-    }
-    */
     offset += kerning;
     x_points = concat(x_points, moveLetter(letter[0],offset)); 
     y_points = concat(y_points, letter[1]);
@@ -239,6 +222,6 @@ float[][] getDotString(String stringy){
   return points;
 }
 
-float[][] xy_string = getDotString("tavalt");
+float[][] xy_string = getDotString("skdjgf asdfja");
 float[] xs = xy_string[0];
 float[] ys = xy_string[1];
