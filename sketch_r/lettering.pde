@@ -148,6 +148,71 @@ float[] y_yy = concat(ym_diagonal, yy_down);
 float[] x_zz = concat(x_dash_left, concat(xa_full_diagonal, x_dash_right));
 float[] y_zz = concat(y_top_3, concat(ya_full_diagonal,y_bottom_3));
 
+float[][] letter_a = {x_aa, y_aa};
+float[][] letter_b = {x_bb, y_bb};
+float[][] letter_c = {x_cc, y_cc};
+float[][] letter_d = {x_dd, y_dd};
+float[][] letter_e = {x_ee, y_ee};
+float[][] letter_f = {x_ff, y_ff};
+float[][] letter_g = {x_gg, y_gg};
+float[][] letter_h = {x_hh, y_hh};
+float[][] letter_i = {x_ii, y_ii};
+float[][] letter_j = {x_jj, y_jj};
+float[][] letter_k = {x_kk, y_kk};
+float[][] letter_l = {x_ll, y_ll};
+float[][] letter_m = {x_mm, y_mm};
+float[][] letter_n = {x_nn, y_nn};
+float[][] letter_o = {x_oo, y_oo};
+float[][] letter_p = {x_pp, y_pp};
+float[][] letter_q = {x_qq, y_qq};
+float[][] letter_r = {x_rr, y_rr};
+float[][] letter_s = {x_ss, y_ss};
+float[][] letter_t = {x_tt, y_tt};
+float[][] letter_u = {x_uu, y_uu};
+float[][] letter_v = {x_vv, y_vv};
+float[][] letter_w = {x_ww, y_ww};
+float[][] letter_x = {x_xx, y_xx};
+float[][] letter_y = {x_yy, y_yy};
+float[][] letter_z = {x_zz, y_zz};
+float[][] letter_space = {{},{}};
 
-float[] xs = x_qq;
-float[] ys = y_qq;
+float[][][] letters = {letter_a,letter_b,letter_c,letter_d,letter_e,letter_f,letter_g,letter_h,letter_i,letter_j,letter_k,letter_l,letter_m,letter_n,letter_o,letter_p,letter_q,letter_r,letter_s,letter_t,letter_u,letter_v,letter_w,letter_x,letter_y,letter_z};
+
+float[][] getLetter(char letter){
+  if(letter <= 'Z' && letter >= 'A') return letters[letter-'A'];
+  if(letter <= 'z' && letter >= 'a') return letters[letter-'a'];
+  return letter_space;
+}
+
+float[] moveLetter(float[] points, float offset_x){
+  float[] copied = new float[points.length];
+  arrayCopy(points, copied);
+  for(int i=0;i<copied.length;i++){
+    copied[i] = copied[i] + offset_x;
+  }
+  return copied;
+}
+
+float[][] getDotString(String stringy){
+  float[] x_points = {};
+  float[] y_points = {};
+  float offset = 0;
+  for (int i=0;i<stringy.length();i++){
+    char curr = stringy.charAt(i);
+    float[][] letter = getLetter(curr);
+    float kerning = 1.5;
+    if(curr == 'i' || curr =='I') {
+      kerning = 1.25;
+      offset -= 0.25;
+    }
+    x_points = concat(x_points, moveLetter(letter[0],offset)); 
+    y_points = concat(y_points, letter[1]);
+    offset += kerning;
+  }
+  float[][] points = {x_points, y_points};
+  return points;
+}
+
+float[][] xy_string = getDotString("hiiiiieyo");
+float[] xs = xy_string[0];
+float[] ys = xy_string[1];

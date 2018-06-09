@@ -11,7 +11,7 @@ Dot[][] all_pools_start; //replaced with the end version of the array
 Dot[][] all_pools_end; //swapped around here
 int[] dots_in_pools_start;
 int[] dots_in_pools_end;
-int dots = 40;
+int dots = 200;
 int pools = 10;
 //int dots_in_pool = dots;
 int hax = -1;
@@ -132,7 +132,7 @@ void draw() {
   moonlander.update();
   hax ++;
   if(hax%300==0){
-    int[] distr = {32,8,0,0, 0,0,0,0, 0,0};
+    int[] distr = {dots-8,8,0,0, 0,0,0,0, 0,0};
     setRandomShape(distr);
   }
   if(hax%300==50){
@@ -218,9 +218,9 @@ float[] get_weighted_position(float shape_coeff, boolean start, Dot doti){
     z = shape_coeff * 1;
   }
   else {
-    x = shape_coeff * (-xs[i]*0.2 + 0.66);
+    x = shape_coeff * (-xs[i]*0.2 + 1);
     y = shape_coeff * -ys[i]*3;
-    z = shape_coeff * 1;
+    z = shape_coeff * 0.5;
   }
   float[] retval = {x, y, z};
   return retval;
