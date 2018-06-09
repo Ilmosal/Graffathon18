@@ -5,6 +5,7 @@ import ddf.minim.*;
 Moonlander moonlander;
 
 float angle = PI/2+1;
+PShader shady;
 
 Dot[] pool; //all are here constantly
 Dot[][] all_pools_start; //replaced with the end version of the array
@@ -125,6 +126,9 @@ void setup() {
     all_pools_end[0][i] = the_new_one;
   }
   resetPools();//sets the start versions of the arrays and everything
+  
+  shady = loadShader("ToonFrag.glsl", "ToonVert.glsl");
+  shady.set("fraction", 1.0);
   moonlander.start();
   for (int i = 0; i < 26; i++) {
     print("[");
@@ -138,6 +142,7 @@ void setup() {
 
 void draw() {
   moonlander.update();
+  shader(shady);
   hax ++;
   if(hax%300==0){
     int[] distr = {dots-8,8,0,0, 0,0,0,0, 0,0};
