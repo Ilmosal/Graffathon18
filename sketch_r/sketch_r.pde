@@ -146,7 +146,7 @@ void draw() {
     resetPools();
   }
   if(hax%300==200){
-    setShape(2, 8);
+    setShape(2, xs.length);
   }
   if(hax%300==250){
     resetPools();
@@ -218,8 +218,8 @@ float[] get_weighted_position(float shape_coeff, boolean start, Dot doti){
     z = shape_coeff * 1;
   }
   else {
-    x = shape_coeff * shape2_xs[i];
-    y = shape_coeff * shape2_ys[i];
+    x = shape_coeff * (-xs[i]*0.2 + 0.66);
+    y = shape_coeff * -ys[i]*3;
     z = shape_coeff * 1;
   }
   float[] retval = {x, y, z};
