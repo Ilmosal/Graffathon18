@@ -16,6 +16,76 @@ float[] shape2_ys = {1,1.5,2,2.5, 3,3.5,4,4.5};
 
 int dot_creation_counter = 0;
 
+
+class Node {
+  int[] pos;
+  Node target;
+  Node old_pos;
+  float pos_on_route;
+  ArrayList<Node> connections;
+  boolean visible;
+  
+  Node(int x_pos, int y_pos, int z_pos, boolean visible) {
+    pos = new int[3];
+    pos[0] = x_pos; pos[1] = y_pos; pos[2] = z_pos;
+    this.visible = visible;
+    target = null;
+    old_pos = null;
+    pos_on_route = 1.0;
+    connections = new ArrayList();
+  }
+  
+  void giveTarget(Node target) {
+    this.target = target;
+    this.pos_on_route = 0.0;
+  }
+  
+  void update() {
+    if (this.target != null) {
+      int[] vec = new int[3];
+      vec[0] = this.target.pos[0] - this.old_pos.pos[0];
+      vec[1] = this.target.pos[1] - this.old_pos.pos[1];
+      vec[2] = this.target.pos[2] - this.old_pos.pos[2];
+      
+      print(vec[0]);
+      print(vec[1]);
+      print(vec[2]);
+      print("\n");
+
+      float len = sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
+
+      this.pos_on_route += 0.01;
+
+      this.pos[0] = (int) (vec[0] * pos_on_route) + this.old_pos.pos[0];
+      this.pos[1] = (int) (vec[1] * pos_on_route) + this.old_pos.pos[1];
+      this.pos[2] = (int) (vec[2] * pos_on_route) + this.old_pos.pos[2];
+   
+      if (this.pos_on_route >= 1.0) {
+        this.pos[0] = this.target.pos[0];
+        this.pos[1] = this.target.pos[1];
+        this.pos[2] = this.target.pos[2];
+        this.old_pos = this.target;
+        this.target = this.target.connections.get(0);
+        this.pos_on_route = 0.0;
+      } 
+    }
+  }
+  
+  void drawNode() {   
+    if (this.visible) {
+      pushMatrix();
+      translate(this.pos[0], this.pos[1], this.pos[2]);
+      sphere(5);
+      popMatrix();
+    
+    
+      for (Node n : this.connections) {
+        line(this.pos[0], this.pos[1], this.pos[2], n.pos[0], n.pos[1], n.pos[2]);
+      }
+    }
+  }
+}
+
 class Dot {
   int start_pool;
   int end_pool;
