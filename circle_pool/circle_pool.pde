@@ -19,6 +19,7 @@ final float minOffset = 2 * sphereRadius + 1;
 final PVector[][] shapes = new PVector[8][];
 
 Dot[] dots;
+Dot[][] slotsUsed = new Dot[layers][];
 int[] maxCounts = new int[layers];
 
 PeasyCam cam;
@@ -61,7 +62,7 @@ void setup() {
   }
   
   colorMode(HSB, 360, 100, 100);
-  cam = new PeasyCam(this, 0, startY, 0, 100);
+  cam = new PeasyCam(this, 0, startY, 0, 400);
   cam.setSuppressRollRotationMode();
   // calculate max number of dots
   int totalCount = 0;
@@ -79,12 +80,14 @@ void setup() {
   // init the dots in the pool
   dots = new Dot[totalCount];
   for (int layer = 0, i = 0; layer < layers; layer++) {
+    slotsUsed[layer] = new Dot[maxCounts[layer]];
     for (int j = 0; j < maxCounts[layer]; j++) {
       Dot dot = dots[i++] = new Dot();
       dot.start.pool = true;
       dot.start.layer = layer;
       dot.start.fracSlot = dot.start.slot = j;
       dot.end = dot.start;
+      slotsUsed[layer][j] = dot;
     }
   }
 }
@@ -114,36 +117,42 @@ void setShape(PVector[] shape) {
       usedCount++;
     }
   }
-  boolean[][] slotsUsed = new boolean[layers][];
-  for (int i = 0; i < layers; i++) {
-    slotsUsed[i] = new boolean[maxCounts[i]];
-  }
   // spread the dots starting in the pool evenly in slots
-  int[] layerSeen = new int[layers];
-  int minSlot = -1;
-  for (int i = 0; i < dots.length; i++) {
-    Dot dot = dots[i];
-    if (dot.start.pool) {
-      if (minSlot == -1) {
-        minSlot = dot.end.slot;
-      } else {
-        dot.end.slot = minSlot + layerSeen[dot.end.layer] * maxCounts[dot.end.layer] / counts[dot.end.layer];
+  Dot[][] newSlots = new Dot[layers][];
+  for (int i = 0; i < layers; i++) {
+    newSlots[i] = new Dot[maxCounts[i]];
+    int seen = 0;
+    for (int j = 0; j < maxCounts[i]; j++) {
+      Dot dot = slotsUsed[i][j];
+      if (dot != null && dot.start.pool) {
+        dot.end.slot = seen * maxCounts[dot.end.layer] / counts[dot.end.layer];
+        seen++;
+        newSlots[dot.end.layer][dot.end.slot] = dot;
       }
-      layerSeen[dot.end.layer]++;
-      slotsUsed[dot.end.layer][dot.end.slot] = true;
     }
   }
+  slotsUsed = newSlots;
   // choose dots to the shape
   int shaped = 0;
   while (shaped < shape.length) {
-    Dot dot = dots[(int) random(dots.length)];
-    // skip dots that are already used in the shape
-    if (!dot.end.pool) continue;
-    // use the points previously used before the pool
-    if (dot.start.pool) {
-      if (usedCount > 0) continue; //<>//
-    } else {
+    Dot dot;
+    if (usedCount > 0) {
+      // find a dot already in the previous shape
+      do {
+        dot = dots[(int) random(dots.length)];
+      } while (!dot.end.pool || dot.start.pool);
       usedCount--;
+    } else {
+      // find a maximally full layer to take from
+      float maxFrac = optimalFrac(false, counts);
+      int layer;
+      do {
+        layer = (int) random(layers);
+      } while ((float) counts[layer] / maxCounts[layer] < maxFrac);
+      // find a dot on that layer
+      do {
+        dot = slotsUsed[layer][(int) random(maxCounts[layer])];
+      } while (dot == null || !dot.end.pool);
     }
     // use the dot
     dot.end.pool = false;
@@ -151,7 +160,7 @@ void setShape(PVector[] shape) {
     // update counts
     if (dot.start.pool) {
       counts[dot.end.layer]--;
-      slotsUsed[dot.end.layer][dot.end.slot] = false;
+      slotsUsed[dot.end.layer][dot.end.slot] = null;
     }
     shaped++;
   }
@@ -167,29 +176,25 @@ void setShape(PVector[] shape) {
       } while ((float) counts[layer] / maxCounts[layer] > minFrac);
       // find a free slot
       int slot;
-      int tries = 0;
       do {
         slot = (int) random(maxCounts[layer]);
-        if (tries++>1000){
-          tries=1;
-        }
-      } while (slotsUsed[layer][slot]);
+      } while (slotsUsed[layer][slot] != null);
       // use the slot
       dot.end.layer = layer;
       dot.end.slot = slot;
       counts[layer]++;
-      slotsUsed[layer][slot] = true;
+      slotsUsed[layer][slot] = dot;
     }
   }
-  // sort the dots by layer/slot
-  java.util.Arrays.sort(dots, new DotComparator());
   // spread the dots in each layer evenly
-  layerSeen = new int[layers];
-  for (int i = 0; i < dots.length; i++) {
-    Dot dot = dots[i];
-    if (dot.end.pool) {
-      dot.end.fracSlot = (float) layerSeen[dot.end.layer] * maxCounts[dot.end.layer] / counts[dot.end.layer];
-      layerSeen[dot.end.layer]++;
+  for (int i = 0; i < layers; i++) {
+    float seen = 0;
+    for (int j = 0; j < maxCounts[i]; j++) {
+      Dot dot = slotsUsed[i][j];
+      if (dot != null && dot.end.pool) {
+        dot.end.fracSlot = seen * maxCounts[dot.end.layer] / counts[dot.end.layer];
+        seen++;
+      }
     }
   }
 }
