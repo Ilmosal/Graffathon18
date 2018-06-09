@@ -9,33 +9,59 @@ import ddf.minim.signals.*;
 import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 
-final int layers = 5;
+final int layers = 6;
 final int sphereRadius = 20;
 final int padding = 5;
 final float rotateSpeed = 0.03;
 
 final float minOffset = 2 * sphereRadius + 1;
 
-final Shape[] shapes = new Shape[] {
-  new Shape(new float[]{50, 50, 50, 50, -50, -50, -50, -50},
-            new float[]{-300, -300, -200, -200, -300, -300, -200, -200},
-            new float[]{50, -50, 50, -50, 50, -50, 50, -50}),
-  new Shape(new float[]{70, 70, 70, 70, -70, -70, -70, -70},
-            new float[]{-280, -280, -220, -220, -280, -280, -220, -220},
-            new float[]{70, -70, 70, -70, 70, -70, 70, -70})
-};
+final PVector[][] shapes = new PVector[8][];
 
 Dot[] dots;
 int[] maxCounts = new int[layers];
 
 PeasyCam cam;
 
+final float startY = -200;
+
 void setup() {
   size(800, 600, P3D);
   //fullScreen(P3D);
   
+  // init fancy cubes for the shapes
+  for (int i = 0; i < shapes.length; i++) {
+    PVector coords[] = new PVector[8 + 12 * i];
+    float off = 3 * sphereRadius;
+    float rad = (i + 1) * off / 2;
+    int p = 0;
+    coords[p++] = new PVector(-rad, startY - 2 * rad, -rad);
+    coords[p++] = new PVector(-rad, startY - 2 * rad, rad);
+    coords[p++] = new PVector(-rad, startY, -rad);
+    coords[p++] = new PVector(-rad, startY, rad);
+    coords[p++] = new PVector(rad, startY - 2 * rad, -rad);
+    coords[p++] = new PVector(rad, startY - 2 * rad, rad);
+    coords[p++] = new PVector(rad, startY, -rad);
+    coords[p++] = new PVector(rad, startY, rad);
+    for (int j = 1; j <= i; j++) {
+      coords[p++] = new PVector(-rad + j * off, startY - 2 * rad, -rad);
+      coords[p++] = new PVector(-rad + j * off, startY - 2 * rad, rad);
+      coords[p++] = new PVector(-rad + j * off, startY, -rad);
+      coords[p++] = new PVector(-rad + j * off, startY, rad);
+      coords[p++] = new PVector(-rad, startY - 2 * rad + j * off, -rad);
+      coords[p++] = new PVector(-rad, startY - 2 * rad + j * off, rad);
+      coords[p++] = new PVector(rad, startY - 2 * rad + j * off, -rad);
+      coords[p++] = new PVector(rad, startY - 2 * rad + j * off, rad);
+      coords[p++] = new PVector(-rad, startY - 2 * rad, -rad + j * off);
+      coords[p++] = new PVector(-rad, startY, -rad + j * off);
+      coords[p++] = new PVector(rad, startY - 2 * rad, -rad + j * off);
+      coords[p++] = new PVector(rad, startY, -rad + j * off);
+    }
+    shapes[i] = coords;
+  }
+  
   colorMode(HSB, 360, 100, 100);
-  cam = new PeasyCam(this, 100);
+  cam = new PeasyCam(this, 0, startY, 0, 100);
   cam.setSuppressRollRotationMode();
   // calculate max number of dots
   int totalCount = 0;
@@ -49,6 +75,7 @@ void setup() {
     maxCounts[layer] = count;
     totalCount += count;
   }
+  println("total dots: " + totalCount);
   // init the dots in the pool
   dots = new Dot[totalCount];
   for (int layer = 0, i = 0; layer < layers; layer++) {
@@ -56,7 +83,7 @@ void setup() {
       Dot dot = dots[i++] = new Dot();
       dot.start.pool = true;
       dot.start.layer = layer;
-      dot.start.x = dot.start.slot = j;
+      dot.start.fracSlot = dot.start.slot = j;
       dot.end = dot.start;
     }
   }
@@ -73,7 +100,7 @@ float optimalFrac(boolean min, int[] counts) {
   return bestFrac;
 }
 
-void setShape(Shape shape) {
+void setShape(PVector[] shape) {
   int[] counts = new int[layers];
   // move the end locations to be starts and count dots starting on each layer
   for (int i = 0; i < dots.length; i++){
@@ -105,7 +132,7 @@ void setShape(Shape shape) {
   }
   // choose dots to the shape
   int shaped = 0;
-  while (shaped < shape.x.length) {
+  while (shaped < shape.length) {
     Dot dot = dots[(int) random(dots.length)];
     // skip dots that are already used in the shape
     if (!dot.end.pool) continue;
@@ -119,9 +146,7 @@ void setShape(Shape shape) {
     //}
     // use the dot
     dot.end.pool = false;
-    dot.end.x = shape.x[shaped];
-    dot.end.y = shape.y[shaped];
-    dot.end.z = shape.z[shaped];
+    dot.end.pos = shape[shaped];
     // update counts
     if (dot.start.pool) {
       counts[dot.end.layer]--;
@@ -162,7 +187,7 @@ void setShape(Shape shape) {
   for (int i = 0; i < dots.length; i++) {
     Dot dot = dots[i];
     if (dot.end.pool) {
-      dot.end.x = (float) layerSeen[dot.end.layer] * maxCounts[dot.end.layer] / counts[dot.end.layer];
+      dot.end.fracSlot = (float) layerSeen[dot.end.layer] * maxCounts[dot.end.layer] / counts[dot.end.layer];
       layerSeen[dot.end.layer]++;
     }
   }
@@ -176,7 +201,7 @@ PVector resolvePoolLoc(int layer, float x) {
 }
 
 PVector resolveLoc(Location loc) {
-  return loc.pool ? resolvePoolLoc(loc.layer, loc.x) : new PVector(loc.x, loc.y, loc.z);
+  return loc.pool ? resolvePoolLoc(loc.layer, loc.fracSlot) : loc.pos;
 }
 
 int shapeNo = 0;
@@ -209,7 +234,7 @@ void draw() {
     PVector loc;
     if (dot.start.pool && dot.end.pool) {
       // in-pool moves should be radial
-      loc = resolvePoolLoc(dot.end.layer, map(phase, 0, 1, dot.start.x, dot.end.x));
+      loc = resolvePoolLoc(dot.end.layer, map(phase, 0, 1, dot.start.fracSlot, dot.end.fracSlot));
     } else {
       // out-of-pool moves should be linear
       PVector startLoc = resolveLoc(dot.start);

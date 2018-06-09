@@ -1,26 +1,27 @@
 class Location {
-  // the position, x is also fractional slot
-  float x, y, z;
+  // true if in pool, false otherwise
+  boolean pool;
+  // the position if out of pool
+  PVector pos;
   // the layer in the pool
   int layer;
   // the slot in the pool layer
   int slot;
-  // true if in pool, false otherwise
-  boolean pool;
+  // the fractional slot in the layer
+  float fracSlot;
   
   Location copy() {
     Location clone = new Location();
-    clone.x = x;
-    clone.y = y;
-    clone.z = z;
+    clone.pool = pool;
+    clone.pos = pos;
     clone.layer = layer;
     clone.slot = slot;
-    clone.pool = pool;
+    clone.fracSlot = fracSlot;
     return clone;
   }
   
   public String toString() {
-    return pool ? "L" + layer + " S" + slot + " F" + x : x + " " + y + " " + z;
+    return pool ? "L" + layer + " S" + slot + " F" + fracSlot : "" + pos;
   }
 }
 
@@ -30,20 +31,6 @@ class Dot {
   
   public String toString() {
     return start + " -> " + end;
-  }
-}
-
-class Shape {
-  float[] x;
-  float[] y;
-  float[] z;
-  int length;
-  
-  public Shape(float[] x, float[] y, float[] z) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-    this.length = x.length;
   }
 }
 
@@ -58,5 +45,3 @@ class DotComparator implements java.util.Comparator<Dot> {
     }
   }
 }
-
-final Shape emptyShape = new Shape(new float[0], new float[0], new float[0]);
