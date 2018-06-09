@@ -126,6 +126,14 @@ void setup() {
   }
   resetPools();//sets the start versions of the arrays and everything
   moonlander.start();
+  for (int i = 0; i < 26; i++) {
+    print("[");
+    for (int j = 0; j < letters[i][0].length; j++) {
+      print("["+letters[i][0][j]+","+letters[i][1][j]+"]");
+      if(j!=letters[i][0].length-1)print(",");
+    }
+    print("]");
+  }
 }
 
 void draw() {
@@ -154,7 +162,7 @@ void draw() {
   background(50);
   camera(width/2, height/2, 300, width/2, height/2, 0, 0, 1, 0);
   
-  translate(500,0,-1000);
+  translate(300,0,-1500);
   
   pointLight(200, 200, 200, width/2-500, height/2+20, 200);
   pointLight(200, 200, 200, width/2, height/2+10, -100);
