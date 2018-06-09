@@ -10,14 +10,21 @@ float[] y_td_half = lerpc(0,0.66,5);
 
 float[] x_dash_line = lerpc(0,1,4);
 float[] y_dash_line = lerpc(0.66,0.66,4);
+float[] y_bottom = lerpc(1,1,4);
+float[] y_top = lerpc(0,0,4);
+
 float[] x_dash_short = lerpc(0.3,0.7,2);
 float[] y_dash_short = lerpc(0.66,0.66,2);
-float[] y_top = lerpc(0,0,4);
-float[] y_bottom = lerpc(1,1,4);
+float[] y_bottom_2 = lerpc(1,1,2);
+float[] y_top_2 = lerpc(0,0,2);
+
 float[] x_dash_right = lerpc(0.25,1,3);
 float[] x_dash_left = lerpc(0,0.75,3);
 float[] y_bottom_3 = lerpc(1,1,3);
 float[] y_top_3 = lerpc(0,0,3);
+
+float[] xy_mid = lerpc(0.5,0.5,2);
+float[] yy_down = lerpc(0.8,1,2);
 
 float[] xa_full_diagonal = lerpc(0,1,8); //for both
 float[] ya_full_diagonal = lerpc(1,0,8); //for both
@@ -29,6 +36,7 @@ float[] xm_diagonal = lerpc(0.25,0.75,7);
 float[] ym_diagonal = concat(lerpc(0.2,0.66,4),lerpc(0.5,0.2,3));
 float[] xn_diagonal = lerpc(0.22,0.78,4);
 float[] yn_diagonal = lerpc(0.2,0.66,4);
+float[] yw_diagonal = concat(lerpc(0.95,0.66,4), lerpc(0.75, 0.9, 3));
 
 float[] lerpc(float start, float end, int points){
   float[] arr = new float[points];
@@ -75,8 +83,8 @@ float[] y_gg = {0.635897, 0.633333, 0.633333, 0.715385, 0.817949, 0.894872, 0.95
 float[] x_hh = concat(concat(x_top_down_left, x_dash_short), x_top_down_right);
 float[] y_hh = concat(concat(y_top_down, y_dash_short), y_top_down);
 // I
-float[] x_ii = x_top_down_middle;
-float[] y_ii = y_top_down;
+float[] x_ii = concat(concat(x_dash_short,x_top_down_middle),x_dash_short);
+float[] y_ii = concat(concat(y_top_2,y_top_down),y_bottom_2);
 // J
 float[] x_ul = {0, 0, 0.0545454, 0.133333, 0.290909, 0.478788, 0.703031, 0.860607, 0.945455, 0.981819, 0.99394};
 float[] y_ul = {0.635897, 0.710256, 0.810256, 0.889744, 0.961538, 0.987179, 0.961538, 0.887179, 0.802564, 0.710256, 0.633333};
@@ -128,10 +136,14 @@ float[] x_vv = x_double_diagonal;
 float[] y_vv = concat(xa_full_diagonal, ya_full_diagonal);
 //W
 //maybe we don't need w?
+float[] x_ww = concat(concat(x_top_down_left, xm_diagonal), x_top_down_right);
+float[] y_ww = concat(concat(y_top_down, yw_diagonal), y_top_down);
 //X
 float[] x_xx = concat(xa_full_diagonal, xa_full_diagonal);
 float[] y_xx = concat(ya_full_diagonal, xa_full_diagonal);
 //Y
+float[] x_yy = concat(xm_diagonal, xy_mid);
+float[] y_yy = concat(ym_diagonal, yy_down);
 //Z
 float[] x_zz = concat(x_dash_left, concat(xa_full_diagonal, x_dash_right));
 float[] y_zz = concat(y_top_3, concat(ya_full_diagonal,y_bottom_3));
