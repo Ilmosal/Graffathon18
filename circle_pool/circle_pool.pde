@@ -9,6 +9,21 @@ import ddf.minim.signals.*;
 import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 
+// audio + colors
+Minim minim;
+AudioPlayer jingle;
+FFT fft;
+float smoothing = 0;
+float[] fftReal;
+float[] fftImag;
+float[] fftSmooth;
+float[] fftPrev;
+float[] fftCurr;
+int specSize;
+int windex = 0;
+int scale = 10;
+
+
 final int layers = 7;
 final int sphereRadius = 20;
 final int padding = 5;
@@ -61,7 +76,7 @@ void setup() {
     shapes[i] = coords;
   }
   
-  colorMode(HSB, 360, 100, 100);
+  colorMode(HSB, 1000, 100, 100);
   cam = new PeasyCam(this, 0, startY, 0, 400);
   cam.setSuppressRollRotationMode();
   // calculate max number of dots
@@ -90,7 +105,28 @@ void setup() {
       slotsUsed[layer][j] = dot;
     }
   }
+  
+  minim = new Minim(this);
+  //jingle = minim.loadFile("/home/joel/Downloads/Disco con Tutti.mp3");
+  jingle = minim.loadFile("../graffathonsong.mp3");
+  fft = new FFT(jingle.bufferSize(), jingle.sampleRate());
+  specSize = fft.specSize();
+  fftSmooth = new float[specSize];
+  fftPrev   = new float[specSize];
+  fftCurr   = new float[specSize];
+  
+  
+  jingle.play();
 }
+
+float dB(float x) {
+  if (x == 0) {
+    return 0;
+  }
+  else {
+    return 10 * (float)Math.log10(x);
+  }
+}  
 
 float optimalFrac(boolean min, int[] counts) {
   float bestFrac = counts[0] / maxCounts[0];
@@ -215,12 +251,17 @@ int shapeNo = 0;
 boolean debugger = false;
 
 final int period = 3000;
+int color_loc = 0;
 
 void draw() {
   background(255);
+  fft.forward(jingle.mix);
+  fftReal = fft.getSpectrumReal();
+  fftImag = fft.getSpectrumImaginary();
+  
   noLights();
-  ambientLight(0, 0, 50);
-  directionalLight(0, 0, 50, 1, 10, 2);
+  //ambientLight(0, 0, 50);
+  directionalLight(0, 0, 100, 1, 10, 2);
   fill(128);
   noStroke();
   
@@ -251,9 +292,23 @@ void draw() {
     }
     pushMatrix();
     translate(loc.x, loc.y, loc.z);
+    // 
+    // COLORFUL STUFF
+    //
+    int m = (int)map(i, 0, dots.length, 0, specSize);
+    fftCurr[i] = scale * (float)Math.log10(fftReal[m]*fftReal[m] + fftImag[m]*fftImag[m]);  
+    fftSmooth[i] = smoothing * fftSmooth[m] + ((1 - smoothing) * fftCurr[m]);
+    float abs_smooth = abs(fftSmooth[i]);
+    //print( abs_smooth + " ");
+    //int specmap = (int)map(i, 0, dots.length, 1, 100 );
+    int hue = (int)map(abs_smooth, 0, 80, 1, 1000);
+    if (hue + color_loc > 1000 )
+      hue = (hue + color_loc) - 1000;
+    fill((hue + color_loc)%1000, 100, 100);
     sphere(sphereRadius);
     popMatrix();
   }
+  color_loc++;
 }
 
 void keyPressed() {
