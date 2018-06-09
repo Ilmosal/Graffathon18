@@ -9,10 +9,10 @@ import ddf.minim.signals.*;
 import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 
-final int layers = 6;
+final int layers = 7;
 final int sphereRadius = 20;
 final int padding = 5;
-final float rotateSpeed = 0.03;
+final float rotateSpeed = 0.05;
 
 final float minOffset = 2 * sphereRadius + 1;
 
@@ -23,7 +23,7 @@ int[] maxCounts = new int[layers];
 
 PeasyCam cam;
 
-final float startY = -200;
+final float startY = -400;
 
 void setup() {
   size(800, 600, P3D);
@@ -102,6 +102,7 @@ float optimalFrac(boolean min, int[] counts) {
 
 void setShape(PVector[] shape) {
   int[] counts = new int[layers];
+  int usedCount = 0;
   // move the end locations to be starts and count dots starting on each layer
   for (int i = 0; i < dots.length; i++){
     Dot dot = dots[i];
@@ -109,6 +110,8 @@ void setShape(PVector[] shape) {
     dot.end.pool = true;
     if (dot.start.pool) {
       counts[dot.end.layer]++;
+    } else {
+      usedCount++;
     }
   }
   boolean[][] slotsUsed = new boolean[layers][];
@@ -136,14 +139,12 @@ void setShape(PVector[] shape) {
     Dot dot = dots[(int) random(dots.length)];
     // skip dots that are already used in the shape
     if (!dot.end.pool) continue;
-    // skip dots that are on an emptier layer than the fullest
-    // TODO: fix
-    //if (dot.start.pool) {
-    //  float maxFrac = optimalFrac(false, counts);
-    //  float frac = counts[dot.end.layer] / maxCounts[dot.end.layer];
-    //  if (frac < maxFrac) {
-    //    println("skipped subopt " + dot + " " + frac + " " + maxFrac); continue;} //<>//
-    //}
+    // use the points previously used before the pool
+    if (dot.start.pool) {
+      if (usedCount > 0) continue; //<>//
+    } else {
+      usedCount--;
+    }
     // use the dot
     dot.end.pool = false;
     dot.end.pos = shape[shaped];
