@@ -12,12 +12,12 @@ import ddf.minim.ugens.*;
 final int layers = 7;
 final int sphereRadius = 5;
 final int padding = 10;
-final float rotateSpeed = 30;
+final float rotateSpeed = 5;
 
 final float minOffset = 2 * sphereRadius + padding;
 
-final Node[] nodes = new Node[2];
-final Node[] frame = new Node[4];
+final Node[][] nodes = new Node[3][];
+final Node[][] frame = new Node[3][];
 
 float beat = 0.0;
 int BPM = 105;
@@ -34,7 +34,7 @@ final float startY = -40;
 
 void setup() {
   size(800, 600, P3D);
-  moonlander = Moonlander.initWithSoundtrack(this, "graffathonsong.mp3", BPM, 8);
+  moonlander = Moonlander.initWithSoundtrack(this, "graffathonsong.mp3", BPM, 32);
   //fullScreen(P3D);
   
   // init fancy cubes for the shapes
@@ -104,27 +104,7 @@ void setup() {
   }
   
   moonlander.start("localhost", 1339, "synkkifilu");
-  setShape(nodes);
-}
-
-void createNodes() {
-  nodes[0] = new Node(new PVector(20.0, -100.0, 20.0));
-  nodes[1] = new Node(new PVector(-20.0, -100.0, 20.0));
-  
-  frame[0] = new Node(new PVector(20.0, -100.0, 20.0));
-  frame[1] = new Node(new PVector(-20.0, -100.0, 20.0));
-  frame[2] = new Node(new PVector(20.0, -100.0, -20.0));
-  frame[3] = new Node(new PVector(-20.0, -100.0, -20.0));
-  
-  frame[0].next_node = frame[1];
-  frame[1].next_node = frame[3];
-  frame[2].next_node = frame[0];
-  frame[3].next_node = frame[2];
-
-  nodes[0].to_node = frame[0].next_node;
-  nodes[1].to_node = frame[1].next_node;
-  nodes[0].from_node = frame[0];
-  nodes[1].from_node = frame[1];
+  setShape(nodes[1]);
 }
 
 float optimalFrac(boolean min, int[] counts) {
@@ -253,27 +233,48 @@ int shapeNo = 0;
 
 boolean debugger = false;
 
-final int period = 3000;
+final int period = 3;
+
+int scene = 1;
+int bar = 0;
+float old_beat = 0.0;
 
 void draw() {
   moonlander.update();
-  background(255);
+  background(0);
   noLights();
-  ambientLight(0, 0, 50);
-  directionalLight(0, 0, 50, 1, 10, 2);
+  //ambientLight(0, 0, 50);
+  directionalLight(0, 0, 100, 1, 10, 2);
   fill(128);
   noStroke();
+  float cur_time = (float) moonlander.getCurrentTime();
   
-  beat = ((float)(moonlander.getCurrentTime()*BPM)/60.0) % 1;
+  beat = (((cur_time*BPM)/60.0) % 4)/4;
   
-  print(beat);
+  if (old_beat > beat) {
+    bar++;
+  } 
+  old_beat = beat;
+  
   /*
   if (millis() / period > shapeNo) {
     shapeNo++;
     setShape(nodes);
   }
   */
-  float phase = millis() /*% period*/ > period / 2 ? 1 : (1 - cos(millis() / (float) period * TAU)) / 2;
+  
+  if (bar == 9 && scene == 1) {
+    scene++;
+    setShape(nodes[scene]);    
+  }
+  
+  /*
+  if (moonlander.getCurrentTime() > 10.0 && scene == 0) {
+    scene++;
+    setShape(nodes[1]);
+  }*/
+  
+  float phase = scene == 0 ? 1 : (1 - cos(min(1, (cur_time - 10)) * PI)) / 2;
   
   if (debugger) {
     for (int i = 0; i < dots.length; i++) println(dots[i]);
@@ -298,17 +299,23 @@ void draw() {
     dot.cache_loc = loc;
     pushMatrix();
     translate(loc.x, loc.y, loc.z);
+    fill(255);
     sphere(sphereRadius);
     popMatrix(); 
   }
   
   for (int i = 0; i < dots.length; i++) {
-    for (Dot d : dots[i].connections) {
-      line(dots[i].cache_loc.x, dots[i].cache_loc.y, dots[i].cache_loc.z, d.cache_loc.x, d.cache_loc.y, d.cache_loc.z); 
+    if (dots[i].end.node == null) {
+      continue;
     }
-  }
-  
+    
+    for (Node n : dots[i].end.node.connections) {  
+      fill(255);
+      line(n.pos.x, n.pos.y, n.pos.z, dots[i].end.node.pos.x, dots[i].end.node.pos.y, dots[i].end.node.pos.z); 
+    }
+  }  
 }
+
 
 void keyPressed() {
   if (key == 'd') {

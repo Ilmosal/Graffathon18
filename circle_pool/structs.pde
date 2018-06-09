@@ -5,12 +5,15 @@ class Node {
   Node next_node;
   boolean beat_frame_mem;
 
+  ArrayList<Node> connections;
+
   Node(PVector vector) {
     pos = vector;
     to_node = null;
     from_node = null;
     next_node = null;
     beat_frame_mem = false;
+    connections = new ArrayList();
   }
   
   void update(Float beatFrame) {
@@ -73,8 +76,6 @@ class Dot {
   Location end = new Location(null);
   PVector cache_loc;
   
-  ArrayList<Dot> connections = new ArrayList<Dot>();
-  
   public String toString() {
     return start + " -> " + end;
   }
@@ -92,4 +93,4 @@ class DotComparator implements java.util.Comparator<Dot> {
       return Integer.compare(a.end.slot, b.end.slot);
     }
   }
-}
+}  
