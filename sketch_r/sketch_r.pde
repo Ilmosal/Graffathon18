@@ -1,4 +1,4 @@
-float angle;
+float angle = PI/2+1;
 
 Dot[] pool; //all are here constantly
 Dot[][] all_pools_start; //replaced with the end version of the array
@@ -106,6 +106,7 @@ void setup() {
   noStroke();
   randomSeed(1337);
   noiseSeed(1337);
+  colorMode(RGB, 255);
   dots_in_pools_end = new int[pools];
   dots_in_pools_end[0] = dots;
   pool = new Dot[dots];
@@ -120,30 +121,45 @@ void setup() {
 
 void draw() {
   hax ++;
-  if(hax%200==0){
+  if(hax%300==0){
     int[] distr = {32,8,0,0, 0,0,0,0, 0,0};
     setRandomShape(distr);
   }
-  if(hax%200==50){
+  if(hax%300==50){
     resetPools();
   }
-  if(hax%200==100){
-    moveToPool(1, 2, 8);
+  if(hax%300==100){
+    moveToPool(1, 2, 4);
+    moveToPool(1, 0, 4);
   }
-  if(hax%200==150){
+  if(hax%300==150){
+    resetPools();
+  }
+  if(hax%300==200){
+    setShape(2, 8);
+  }
+  if(hax%300==250){
     resetPools();
   }
   background(50);
   camera(width/2, height/2, 300, width/2, height/2, 0, 0, 1, 0);
   
-  pointLight(200, 200, 200, width/2, height/2+20, -200);
+  translate(500,0,-1000);
+  
+  pointLight(200, 200, 200, width/2-500, height/2+20, 200);
   pointLight(200, 200, 200, width/2, height/2+10, -100);
   
   translate(width/2, height/2 + 100);
   rotateY(angle + 1);
   
+  color color1 = color(109, 50, 97);
+  color color2 = color(255, 213, 25);
+  
   float shape_coeff = sinEase((hax%50)/50.0);//sinEase(abs((hax%100-50)/50.0));
   float noise_coeff = saltShaker(1-shape_coeff);
+  color interp = interpolateColourWithGamma(shape_coeff, color1, color2);
+  //fill();
+  fill(interp);
   for (int i=0;i<dots;i++){
     pushMatrix();
     Dot doti = pool[i];
@@ -246,6 +262,73 @@ void setRandomShape(int[] pool_distribution) {
   dots_in_pools_end = pool_distribution;
 }
 
+
+// moves dots in all pools except pool 0 to the defined pool
+// if there are too many dots, the rest go back into the pool 0
+// if there are too few dots, pool 0 is used to pick the remaining dots
+void setShape(int destination_pool, int n) {
+  resetPools();
+  //shuffle indices
+  int[] indices = new int[n];
+  for (int i = 0; i<n; i++){
+    indices[i] = i;
+  }
+  shuffle(indices);
+  
+  //shuffle dots into pools
+  all_pools_end = new Dot[pools][dots]; //reset the array
+  all_pools_end[0] = all_pools_start[0];
+  
+  int current_index = dots_in_pools_end[0];
+  for (int i = 0; i<dots;i++){
+    Dot selected = pool[i];
+    if(selected.end_pool != 0){
+      selected.end_pool = 0;
+      selected.end_pool_i = current_index;
+      all_pools_end[0][current_index] = selected;
+      current_index ++;
+    }
+  }
+  int actual_index = 0;
+  for (int i = 1; i<pools;i++){
+    for (int j =0; j<min(dots_in_pools_start[i], n); j++){
+      Dot selected = all_pools_start[i][j];
+      selected.end_pool = destination_pool;
+      selected.end_pool_i = indices[actual_index];
+      all_pools_end[destination_pool][selected.end_pool_i] = selected;
+      actual_index ++;
+    }
+  }
+  int root_count = dots_in_pools_start[0];
+  if(actual_index < n){
+    int[] root_indices = new int[root_count];
+    for (int i = 0; i<root_count; i++){
+      root_indices[i] = i;
+    }
+    shuffle(root_indices);
+    
+    for (int j=0; actual_index<n; actual_index++){
+      Dot selected = all_pools_start[0][root_indices[j]];
+      selected.end_pool = destination_pool;
+      selected.end_pool_i = indices[actual_index];
+      all_pools_end[destination_pool][selected.end_pool_i] = selected;
+      j ++;
+    }
+  }
+  dots_in_pools_end = new int[pools];
+  dots_in_pools_end[0] = dots - n;
+  dots_in_pools_end[destination_pool] = n;
+  actual_index = 0;
+  for (int i=0;i<current_index;i++){
+    Dot moving = all_pools_end[0][i];
+    if(moving.end_pool == 0){
+      moving.end_pool_i = actual_index;
+      all_pools_end[0][actual_index] = moving;
+      actual_index ++;
+    }
+  }
+}
+
 //assumes that the resetPools has been called before
 //assumes there is enough dots in origin and that destination can get the dots without crashing
 //moves n dots from origin pool to end of the destination pool and resets origin indices
@@ -284,4 +367,43 @@ void shuffle(int[] arr){
        arr[i] = arr[pick]; 
        arr[pick]= temp; 
     }
+}
+
+//returns the interpolated colour?
+color interpolateColour(float coeff, color from, color to){
+  int r1 = (from >> 16) & 0xFF;  // Faster way of getting red(argb)
+  int g1 = (from >> 8) & 0xFF;   // Faster way of getting green(argb)
+  int b1 = from & 0xFF;          // Faster way of getting blue(argb)
+  int r2 = (to >> 16) & 0xFF;  // Faster way of getting red(argb)
+  int g2 = (to >> 8) & 0xFF;   // Faster way of getting green(argb)
+  int b2 = to & 0xFF;          // Faster way of getting blue(argb)
+  int a = 0xFF << 24;
+  int r = min(255,(int)round(r1*(1-coeff) + r2*(coeff))) << 16;
+  int g = min(255,(int)round(g1*(1-coeff) + g2*(coeff))) << 8;
+  int b = min(255,(int)round(b1*(1-coeff) + b2*(coeff)));
+  return a+r+b+g;
+}
+
+
+//returns the interpolated colour?
+color interpolateColourWithGamma(float coeff, color from, color to){
+  int r1 = (from >> 16) & 0xFF;  // Faster way of getting red(argb)
+  int g1 = (from >> 8) & 0xFF;   // Faster way of getting green(argb)
+  int b1 = from & 0xFF;          // Faster way of getting blue(argb)
+  int r2 = (to >> 16) & 0xFF;  // Faster way of getting red(argb)
+  int g2 = (to >> 8) & 0xFF;   // Faster way of getting green(argb)
+  int b2 = to & 0xFF;          // Faster way of getting blue(argb)
+  float gamma = 2;
+  int a = 0xFF << 24;
+  int r = min(255, interpolateWithGamma(coeff, r1, r2, gamma)) << 16;
+  int g = min(255, interpolateWithGamma(coeff, g1, g2, gamma)) << 8;
+  int b = min(255, interpolateWithGamma(coeff, b1, b2, gamma));
+  return a+r+g+b;
+}
+
+
+//returns interpolated value
+int interpolateWithGamma(float coeff, float val1, float val2, float gamma){
+  int retval = (int)round(pow(pow(val1, gamma)*(coeff) + pow(val2, gamma)*(1-coeff), 1.0/gamma));
+  return retval;
 }
