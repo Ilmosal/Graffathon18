@@ -1,3 +1,9 @@
+import moonlander.library.*;
+
+import ddf.minim.*;
+
+Moonlander moonlander;
+
 float angle = PI/2+1;
 
 Dot[] pool; //all are here constantly
@@ -102,6 +108,8 @@ class Dot {
 }
 
 void setup() {
+  moonlander = Moonlander.initWithSoundtrack(this, "graffathonsong.mp3", 105, 8);
+
   size(400, 400, P3D);
   noStroke();
   randomSeed(1337);
@@ -117,9 +125,11 @@ void setup() {
     all_pools_end[0][i] = the_new_one;
   }
   resetPools();//sets the start versions of the arrays and everything
+  moonlander.start();
 }
 
 void draw() {
+  moonlander.update();
   hax ++;
   if(hax%300==0){
     int[] distr = {32,8,0,0, 0,0,0,0, 0,0};
@@ -367,6 +377,7 @@ void shuffle(int[] arr){
        arr[i] = arr[pick]; 
        arr[pick]= temp; 
     }
+<<<<<<< HEAD
 }
 
 //returns the interpolated colour?
@@ -407,3 +418,6 @@ int interpolateWithGamma(float coeff, float val1, float val2, float gamma){
   int retval = (int)round(pow(pow(val1, gamma)*(coeff) + pow(val2, gamma)*(1-coeff), 1.0/gamma));
   return retval;
 }
+=======
+}  
+>>>>>>> stash
