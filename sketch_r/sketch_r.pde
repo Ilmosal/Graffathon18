@@ -377,7 +377,6 @@ void shuffle(int[] arr){
        arr[i] = arr[pick]; 
        arr[pick]= temp; 
     }
-<<<<<<< HEAD
 }
 
 //returns the interpolated colour?
@@ -418,6 +417,3 @@ int interpolateWithGamma(float coeff, float val1, float val2, float gamma){
   int retval = (int)round(pow(pow(val1, gamma)*(coeff) + pow(val2, gamma)*(1-coeff), 1.0/gamma));
   return retval;
 }
-=======
-}  
->>>>>>> stash
