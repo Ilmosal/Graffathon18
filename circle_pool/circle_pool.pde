@@ -49,6 +49,8 @@ int color_loc = 0;
 
 final float startY = -40;
 
+final boolean manualCam = false;
+
 void setup() {
   size(1024, 576, P3D);
   //fullScreen(P3D); 
@@ -74,8 +76,10 @@ void setup() {
   createNodes(nodes, frames);
   createScenes();
   
-  //cam = new PeasyCam(this, 0, startY, 0, 400);
-  //cam.setSuppressRollRotationMode();
+  if (manualCam) {
+    cam = new PeasyCam(this, 0, startY, 0, 400);
+    cam.setSuppressRollRotationMode();
+  }
   
   // SOUND SETUP CHUNK
   minim = new Minim(this);
@@ -150,7 +154,9 @@ void draw() {
   
   if (totalBeat >= 316) exit();
  
-  updateCamera(totalBeat);
+  if (!manualCam) {
+    updateCamera(totalBeat);
+  }
   
   // find current scene
   int targetScene = sceneIndex;
@@ -169,7 +175,7 @@ void draw() {
   
   println(sceneIndex, scene, totalBeat);
   
-  float transitionLen = 2;
+  float transitionLen = 1;
   float offset = min(1, (totalBeat - sceneStart) / transitionLen);
   float phase = (1 - cos(offset * PI)) / 2;
  
@@ -225,11 +231,55 @@ void draw() {
       line(n.pos.x, n.pos.y, n.pos.z, dots[i].end.node.pos.x, dots[i].end.node.pos.y, dots[i].end.node.pos.z); 
     }
   }
-  /*//debug cube
-  stroke(255);
+  
   noFill();
-  pushMatrix();
-  translate(0, -100, 0);
-  box(20);
-  popMatrix();*/
+  stroke(0, 100, 100);
+  line(0, 0, 0, 1000, 0, 0);
+  stroke(120, 100, 100);
+  line(0, 0, 0, 0, 1000, 0);
+  stroke(240, 100, 100);
+  line(0, 0, 0, 0, 0, 1000);
+  if (manualCam) {
+    float[] pos = cam.getPosition();
+    float[] center = cam.getLookAt();
+    pushMatrix();
+    translate(center[0],center[1],center[2]);
+    fill(0, 100, 100);
+    noStroke();
+    sphere(5);
+    popMatrix();
+    cam.beginHUD();
+    fill(255);
+    noStroke();
+    noLights();
+    text("at " + pos[0] + " " + pos[1] + " " + pos[2], 500, 500);
+    text("look " + center[0] + " " + center[1] + " " + center[2], 500, 520);
+    cam.endHUD();
+  }
+}
+
+void keyPressed() {
+  if (manualCam) {
+    float[] pos = cam.getLookAt();
+    switch (key) {
+      case 'w':
+        cam.lookAt(pos[0], pos[1], pos[2] - 10, cam.getDistance());
+        break;
+      case 's':
+        cam.lookAt(pos[0], pos[1], pos[2] + 10, cam.getDistance());
+        break;
+      case 'a':
+        cam.lookAt(pos[0] - 10, pos[1], pos[2], cam.getDistance());
+        break;
+      case 'd':
+        cam.lookAt(pos[0] + 10, pos[1], pos[2], cam.getDistance());
+        break;
+      case 'q':
+        cam.lookAt(pos[0], pos[1] - 10, pos[2], cam.getDistance());
+        break;
+      case 'z':
+        cam.lookAt(pos[0], pos[1] + 10, pos[2], cam.getDistance());
+        break;
+    }
+  }
 }

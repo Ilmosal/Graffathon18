@@ -3,8 +3,8 @@ Scene[] scenes;
 void createScenes() {
   scenes = new Scene[] {
     new IntroScene(-100),
-    new NodeScene(16, nodes[0]),
-    new TextScene(32, "graffathon", 0, -100, 0, PI / 12, PI / 6, 30, 0),
+    new TextScene(16, "graffathon", 0, -100, 0, 0, 0, 30, 0),
+    new TextScene(32, "team epatoivo", 0, -100, 0, PI / 12, PI * 0.6, 30, 0),
     new TextScene(48, "demonimi", 0, -100, -70, PI / 6, PI / 2, 40, 1),
     new NodeScene(64, nodes[0]),
     new NodeScene(80, nodes[1]),

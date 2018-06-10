@@ -40,9 +40,11 @@ PathStop[] path = new PathStop[] {
   new PathStop(6, new PVector(0, 0, 100), new PVector(0, 0, 0), new PVector(), null),
   new PathStop(6, new PVector(0, -100, 0), new PVector(0, 0, 0), new PVector(), new PVector(0, 0, -1)),
   new PathStop(10, new PVector(0, -100, 0), new PVector(0, 0, 0), new PVector(), new PVector(0, 0, -1)),
-  new PathStop(10, new PVector(0, -150, 200), new PVector(0, -100, 0), new PVector(), null),
-  new PathStop(32, new PVector(0, -150, 200), new PVector(0, -100, 0), new PVector(), null),
-  new PathStop(48, new PVector(130, -210, 175), new PVector(50, -20, -45), new PVector(0, -100, 0), new PVector(), null),
+  new PathStop(10, new PVector(0, -350, 0), new PVector(0, 0, 0), new PVector(), new PVector(0, 0, -1)),
+  new PathStop(14, new PVector(0, -350, 0), new PVector(0, 0, 0), new PVector(), new PVector(0, 0, -1)),
+  new PathStop(14, new PVector(-250, -125, 90), new PVector(200, 0, 200), new PVector(0, -20, -230), new PVector(), null),
+  new PathStop(32, new PVector(250, -125, 60), new PVector(200, 50, -200), new PVector(-50, 0, -180), new PVector(), null),
+  new PathStop(48, new PVector(-250, -113, -19), new PVector(0, -13.8, 205), new PVector(-50, -120, 100), new PVector(), null),
   new PathStop(64, new PVector(180, -240, 70), new PVector(0, 0, -200), new PVector(0, -100, 0), new PVector(), null),
   new PathStop(80, new PVector(-180, -170, 70), new PVector(0, 20, 200), new PVector(0, -100, 0), new PVector(), null),
   new PathStop(96, new PVector(70, -90, 180), new PVector(200, 0, 0), new PVector(0, -100, 0), new PVector(), null),
@@ -64,6 +66,7 @@ PVector interpolateCubic(PVector pos0, PVector vel0, PVector pos1, PVector vel1,
   PVector p2 = vel0.copy().add(pos0);
   PVector p3 = vel1.copy().mult(-1).add(pos1);
   PVector p4 = pos1;
+  println(p1,p2,p3,p4);
   PVector pos = p1.copy().mult(T * T * T)
       .add(p2.copy().mult(3 * T * T * t))
       .add(p3.copy().mult(3 * T * t * t))
@@ -83,6 +86,7 @@ void updateCamera(float time) {
   while (camIndex < path.length - 1 && path[camIndex + 1].time <= time) {
     camIndex++;
   }
+  ((PGraphics3D) g).cameraNear = 0.01;
   PathStop from = path[camIndex];
   if (camIndex == path.length - 1) {
     camera(from.pos.x, from.pos.y, from.pos.z, from.center.x, from.center.y, from.center.z, from.up.x, from.up.y, from.up.z);
@@ -93,7 +97,6 @@ void updateCamera(float time) {
     PVector pos, center;
     if (to.cubic) {
       pos = interpolateCubic(from.pos, from.velocity, to.pos, to.velocity, t);
-      println(from.pos, from.velocity, to.pos, to.velocity);
       println(t, pos, lastVel, lastVel.mag());
       center = interpolateCubic(from.center, from.centerVelocity, to.center, to.centerVelocity, t);
     } else {
