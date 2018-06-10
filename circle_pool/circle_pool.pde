@@ -1,6 +1,7 @@
 import peasy.*;
-
+import java.util.Collections;
 import moonlander.library.*;
+import moonlander.library.MinimController;
 
 import ddf.minim.*;
 import ddf.minim.analysis.*;
@@ -28,12 +29,27 @@ PeasyCam cam;
 
 Moonlander moonlander;
 
+// audio + colors
+Minim minim;
+MinimController mc;
+AudioPlayer jingle;
+FFT fft;
+float smoothing = 0;
+float[] fftReal;
+float[] fftImag;
+float[] fftSmooth;
+float[] fftPrev;
+float[] fftCurr;
+int specSize;
+int windex = 0;
+int scale = 10;
+int color_loc = 0;
+
 final float startY = -40;
 
 void setup() {
   size(1024, 576, P3D);
-  //fullScreen(P3D);
-  moonlander = Moonlander.initWithSoundtrack(this, "../../Exit the Premises.mp3", BPM, 8);
+  //fullScreen(P3D); 
   
   colorMode(HSB, 360, 100, 100);
   
@@ -86,8 +102,33 @@ void setup() {
       slotsUsed[layer][j] = dot;
     }
   }
+  
+  // SOUND SETUP CHUNK
+  minim = new Minim(this);
+  jingle = minim.loadFile("/home/joel/Downloads/Disco con Tutti.mp3");
+  //jingle = minim.loadFile("/home/joel/Nextcloud/workspace/processing/Overworld.mp3");
+  //jingle = minim.loadFile("../graffathonsong.mp3");
+  mc = new MinimController(jingle, 128, 8);
+  //moonlander = Moonlander.initWithSoundtrack(this, "../../Exit the Premises.mp3", BPM, 8);
+  moonlander = new Moonlander(this, mc);
   moonlander.start("localhost", 1339, "synkkifilu");
+  fft = new FFT(jingle.bufferSize(), jingle.sampleRate());
+  specSize = fft.specSize();
+  fftSmooth = new float[specSize];
+  fftPrev   = new float[specSize];
+  fftCurr   = new float[specSize]; 
+  //jingle.play();
 }
+
+// DECIBEL LOG CHECK
+float dB(float x) {
+  if (x == 0) {
+    return 0;
+  }
+  else {
+    return 10 * (float)Math.log10(x);
+  }
+} 
 
 PVector resolvePoolLoc(int layer, float x) {
   float radius = layer * minOffset;
@@ -120,6 +161,11 @@ void draw() {
   ambientLight(0, 0, (float) moonlander.getValue("ambient"));
   directionalLight(0, 0, (float) moonlander.getValue("directional"), 1, 10, 2);
   background(0);
+  
+  // SOUND
+  fft.forward(jingle.mix);
+  fftReal = fft.getSpectrumReal();
+  fftImag = fft.getSpectrumImaginary();
   
   totalBeat = (float) moonlander.getCurrentTime() * BPM / 60.0;
   beat = totalBeat % 1;
@@ -166,7 +212,18 @@ void draw() {
     }
     
     dot.cache_loc = loc;
-    fill(dot.clr);
+    // COLORFUL STUFF
+    int m = (int)map(i, 0, dots.length, 0, specSize);
+    fftCurr[i] = scale * (float)Math.log10(fftReal[m]*fftReal[m] + fftImag[m]*fftImag[m]);  
+    fftSmooth[i] = smoothing * fftSmooth[m] + ((1 - smoothing) * fftCurr[m]);
+    float abs_smooth = abs(fftSmooth[i]);
+    //print( abs_smooth + " ");
+    //int specmap = (int)map(i, 0, dots.length, 1, 100 );
+    int hue = (int)map(abs_smooth, 0, 80, 1, 1000);
+    if (hue + color_loc > 1000 )
+      hue = (hue + color_loc) - 1000;
+    fill((hue + color_loc)%1000, 100, 100);
+    //fill(dot.clr);
     pushMatrix();
     translate(loc.x, loc.y, loc.z);
     sphere(sphereRadius);
