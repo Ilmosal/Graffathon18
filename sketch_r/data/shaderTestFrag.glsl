@@ -17,9 +17,9 @@ void main() {
   float intensity = max(0.0, dot(direction, normal));
   vec4 col = vec4(intensity, intensity, intensity, 1) * vertColor;
   float lum = dot(col, lumcoeff);
-  if (0.5 < lum) {
+  if (0.25 < lum) {
     gl_FragColor = vertColor;
   } else {
-    gl_FragColor = vec4(0, 0, 0, 1);
+    gl_FragColor = vec4(0.45, 0.05, 0.18, 1);
   }
 }

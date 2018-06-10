@@ -12,7 +12,7 @@ Dot[][] all_pools_start; //replaced with the end version of the array
 Dot[][] all_pools_end; //swapped around here
 int[] dots_in_pools_start;
 int[] dots_in_pools_end;
-int dots = 200;
+int dots = 400;
 int pools = 10;
 //int dots_in_pool = dots;
 int hax = -1;
@@ -142,7 +142,7 @@ void setup() {
 
 void draw() {
   moonlander.update();
-  //shader(shady);
+  shader(shady);
   hax ++;
   if(hax==0){
     int[] distr = {dots-8,8,0,0, 0,0,0,0, 0,0};
