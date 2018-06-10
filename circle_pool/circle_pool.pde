@@ -9,18 +9,18 @@ import ddf.minim.signals.*;
 import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 
-final int layers = 7;
+final int layers = 9;
 final int sphereRadius = 5;
 final int padding = 10;
-final float rotateSpeed = 5;
+final float rotateSpeed = 16;
 
 final float minOffset = 2 * sphereRadius + padding;
 
 final Node[][] nodes = new Node[3][];
 final Node[][] frame = new Node[3][];
 
-float beat = 0.0;
-int BPM = 105;
+float beat = 0.0, totalBeat = 0.0;
+int BPM = 128;
 
 Dot[] dots;
 Dot[][] slotsUsed = new Dot[layers][];
@@ -33,49 +33,19 @@ Moonlander moonlander;
 final float startY = -40;
 
 void setup() {
-  size(800, 600, P3D);
-  moonlander = Moonlander.initWithSoundtrack(this, "graffathonsong.mp3", BPM, 32);
+  size(1024, 576, P3D);
+  moonlander = Moonlander.initWithSoundtrack(this, "../../Exit the Premises.mp3", BPM, 8);
   //fullScreen(P3D);
   
-  // init fancy cubes for the shapes
-  /*
-  for (int i = 0; i < shapes.length; i++) {
-    PVector coords[] = new PVector[8 + 12 * i];
-    float off = 3 * sphereRadius;
-    float rad = (i + 1) * off / 2;
-    int p = 0;
-    coords[p++] = new PVector(-rad, startY - 2 * rad, -rad);
-    coords[p++] = new PVector(-rad, startY - 2 * rad, rad);
-    coords[p++] = new PVector(-rad, startY, -rad);
-    coords[p++] = new PVector(-rad, startY, rad);
-    coords[p++] = new PVector(rad, startY - 2 * rad, -rad);
-    coords[p++] = new PVector(rad, startY - 2 * rad, rad);
-    coords[p++] = new PVector(rad, startY, -rad);
-    coords[p++] = new PVector(rad, startY, rad);
-    for (int j = 1; j <= i; j++) {
-      coords[p++] = new PVector(-rad + j * off, startY - 2 * rad, -rad);
-      coords[p++] = new PVector(-rad + j * off, startY - 2 * rad, rad);
-      coords[p++] = new PVector(-rad + j * off, startY, -rad);
-      coords[p++] = new PVector(-rad + j * off, startY, rad);
-      coords[p++] = new PVector(-rad, startY - 2 * rad + j * off, -rad);
-      coords[p++] = new PVector(-rad, startY - 2 * rad + j * off, rad);
-      coords[p++] = new PVector(rad, startY - 2 * rad + j * off, -rad);
-      coords[p++] = new PVector(rad, startY - 2 * rad + j * off, rad);
-      coords[p++] = new PVector(-rad, startY - 2 * rad, -rad + j * off);
-      coords[p++] = new PVector(-rad, startY, -rad + j * off);
-      coords[p++] = new PVector(rad, startY - 2 * rad, -rad + j * off);
-      coords[p++] = new PVector(rad, startY, -rad + j * off);
-    }
-    shapes[i] = coords;
-  }
-  */
   createNodes();
+  createScenes();
   
   colorMode(HSB, 360, 100, 100);
-  cam = new PeasyCam(this, 0, startY, 0, 400);
-  cam.setSuppressRollRotationMode();
+  
+  //cam = new PeasyCam(this, 0, startY, 0, 400);
+  //cam.setSuppressRollRotationMode();
+  
   // calculate max number of dots
-
   int totalCount = 0;
   for (int layer = 0; layer < layers; layer++) {
     int count = 1;
@@ -87,10 +57,8 @@ void setup() {
     maxCounts[layer] = count;
     totalCount += count;
   }
-  println("total dots: " + totalCount);
   // init the dots in the pool
   dots = new Dot[totalCount];
-  
   for (int layer = 0, i = 0; layer < layers; layer++) {
     slotsUsed[layer] = new Dot[maxCounts[layer]];
     for (int j = 0; j < maxCounts[layer]; j++) {
@@ -104,7 +72,6 @@ void setup() {
   }
   
   moonlander.start("localhost", 1339, "synkkifilu");
-  setShape(nodes[1]);
 }
 
 float optimalFrac(boolean min, int[] counts) {
@@ -235,51 +202,44 @@ boolean debugger = false;
 
 final int period = 3;
 
-int scene = 1;
-int bar = 0;
-float old_beat = 0.0;
+int sceneIndex = -1;
+float sceneStart;
+Scene scene;
 
 void draw() {
   moonlander.update();
-  background(0);
   noLights();
-  //ambientLight(0, 0, 50);
-  directionalLight(0, 0, 100, 1, 10, 2);
-  fill(128);
-  noStroke();
-  float cur_time = (float) moonlander.getCurrentTime();
+  ambientLight(0, 0, (float) moonlander.getValue("ambient"));
+  directionalLight(0, 0, (float) moonlander.getValue("directional"), 1, 10, 2);
+  background(0);
   
-  beat = (((cur_time*BPM)/60.0) % 4)/4;
+  totalBeat = (float) moonlander.getCurrentTime() * BPM / 60.0;
+  beat = totalBeat % 1;
   
-  if (old_beat > beat) {
-    bar++;
-  } 
-  old_beat = beat;
+  updateCamera(totalBeat);
   
-  /*
-  if (millis() / period > shapeNo) {
-    shapeNo++;
-    setShape(nodes);
+  // find current scene
+  int targetScene = sceneIndex;
+  while (targetScene < scenes.length - 1 && scenes[targetScene + 1].start <= totalBeat) {
+    targetScene++;
   }
-  */
-  
-  if (bar == 9 && scene == 1) {
-    scene++;
-    setShape(nodes[scene]);    
+  while (targetScene > 0 && scenes[targetScene].start > totalBeat) {
+    targetScene--;
+  }
+  if (targetScene != sceneIndex) {
+    sceneIndex = targetScene;
+    scene = scenes[sceneIndex];
+    sceneStart = scene.start;
+    scene.initScene();
   }
   
-  /*
-  if (moonlander.getCurrentTime() > 10.0 && scene == 0) {
-    scene++;
-    setShape(nodes[1]);
-  }*/
+  println(sceneIndex, scene, totalBeat);
   
-  float phase = scene == 0 ? 1 : (1 - cos(min(1, (cur_time - 10)) * PI)) / 2;
+  float transitionLen = 1;
+  float offset = min(1, (totalBeat - sceneStart) / transitionLen);
+  float phase = (1 - cos(offset * PI)) / 2;
   
-  if (debugger) {
-    for (int i = 0; i < dots.length; i++) println(dots[i]);
-    debugger = false; //<>//
-  }
+  scene.initFrame(totalBeat - sceneStart, phase);
   
   for (int i = 0; i < dots.length; i++) {
     Dot dot = dots[i];  
@@ -297,9 +257,9 @@ void draw() {
           map(phase, 0, 1, startLoc.z, endLoc.z));
     }
     dot.cache_loc = loc;
+    fill(dot.clr);
     pushMatrix();
     translate(loc.x, loc.y, loc.z);
-    fill(255);
     sphere(sphereRadius);
     popMatrix(); 
   }
@@ -309,16 +269,14 @@ void draw() {
       continue;
     }
     
-    for (Node n : dots[i].end.node.connections) {  
-      fill(255);
+    for (Node n : dots[i].end.node.connections) {
       line(n.pos.x, n.pos.y, n.pos.z, dots[i].end.node.pos.x, dots[i].end.node.pos.y, dots[i].end.node.pos.z); 
     }
-  }  
-}
-
-
-void keyPressed() {
-  if (key == 'd') {
-    debugger = true;
   }
+  stroke(255);
+  noFill();
+  pushMatrix();
+  translate(0, -100, 0);
+  box(20);
+  popMatrix();
 }

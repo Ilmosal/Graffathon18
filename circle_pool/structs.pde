@@ -17,28 +17,42 @@ class Node {
   }
   
   void update(Float beatFrame) {
-    if (beatFrame < 0.4 && beat_frame_mem) {
-        this.pos = this.to_node.pos;
-        this.from_node = this.to_node;
-        this.to_node = this.to_node.next_node;
-        beat_frame_mem = false;  
-      } else if (beatFrame > 0.5) {
-      beat_frame_mem = true;
-    }
-    
     if (this.to_node != null) {  
+      if (beatFrame < 0.4 && beat_frame_mem) {
+          this.pos = this.to_node.pos;
+          this.from_node = this.to_node;
+          this.to_node = this.to_node.next_node;
+          beat_frame_mem = false;  
+        } else if (beatFrame > 0.5) {
+        beat_frame_mem = true;
+      }
       
       PVector vec = this.to_node.pos.copy().sub(this.from_node.pos);  
 
-      this.pos = this.from_node.pos.copy().add(vec.mult(sinusoidalEaseIO(beatFrame)));  
+      this.pos = this.from_node.pos.copy().add(vec.mult(sinusoidalEaseIn(beatFrame)));  
     } 
   }
   
+  private float sinusoidalEaseIn(float val) {
+    return sin(PI / 2 * val);
+  }
+  
   private float sinusoidalEaseIO(float val) {
-    return -0.5*(cos(3.14156*val))+0.5;
+    return cos(PI * val) / 2 + 0.5;
   }
 }
 
+abstract class Scene {
+  int start;
+  
+  Scene(int start) {
+    this.start = start;
+  }
+  
+  abstract void initScene();
+  
+  abstract void initFrame(float beatsAfterStart, float phase);
+}
 
 class Location {
   // true if in pool, false otherwise
@@ -74,6 +88,7 @@ class Location {
 class Dot {
   Location start = new Location(null);
   Location end = new Location(null);
+  color clr = color(255);
   PVector cache_loc;
   
   public String toString() {
@@ -82,15 +97,3 @@ class Dot {
   
     
 }
-
-class DotComparator implements java.util.Comparator<Dot> {
-  public int compare(Dot a, Dot b) {
-    if (a.end.pool != b.end.pool) {
-      return Boolean.compare(a.end.pool, b.end.pool);
-    } else if (a.end.layer != b.end.layer) {
-      return Integer.compare(a.end.layer, b.end.layer);
-    } else {
-      return Integer.compare(a.end.slot, b.end.slot);
-    }
-  }
-}  
