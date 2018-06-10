@@ -167,6 +167,7 @@ void createWheel(Node[] nodes, Node[] frames, int size, int side_len, int up) {
   nodes[6].from_node = frames[6];
   nodes[7].to_node = frames[7].next_node;
   nodes[7].from_node = frames[7];
+  
   nodes[8].to_node = frames[8].next_node;
   nodes[8].from_node = frames[8];
   nodes[9].to_node = frames[9].next_node;
@@ -201,7 +202,7 @@ void createWheel(Node[] nodes, Node[] frames, int size, int side_len, int up) {
   nodes[23].from_node = frames[20]; 
 }
 
-void createCubeInCube(Node[] nodes, int side, int up) {
+void createCubeInCube(Node[] nodes, Node[] frames, int side, int up) {
   nodes[0] = new Node(new PVector(side, side+up, side));
   nodes[1] = new Node(new PVector(side, -side+up, side));
   nodes[2] = new Node(new PVector(side, side+up, -side));
@@ -220,9 +221,18 @@ void createCubeInCube(Node[] nodes, int side, int up) {
   nodes[14] = new Node(new PVector(-side, side+up, -side));
   nodes[15] = new Node(new PVector(-side, -side+up, -side));
   
+  frames[0] = new Node(new PVector(side, side+up, side));
+  frames[1] = new Node(new PVector(side, -side+up, side));
+  frames[2] = new Node(new PVector(side, side+up, -side));
+  frames[3] = new Node(new PVector(side, -side+up, -side));
+  frames[4] = new Node(new PVector(-side, side+up, side));
+  frames[5] = new Node(new PVector(-side, -side+up, side));
+  frames[6] = new Node(new PVector(-side, side+up, -side));
+  frames[7] = new Node(new PVector(-side, -side+up, -side));
+  
   nodes[0].next_node = nodes[1];
   nodes[1].next_node = nodes[3];
-  nodes[2].next_node = nodes[0];
+  nodes[2].next_node = nodes[4];
   nodes[3].next_node = nodes[2];
   
   nodes[4].next_node = nodes[5];
@@ -230,18 +240,52 @@ void createCubeInCube(Node[] nodes, int side, int up) {
   nodes[6].next_node = nodes[0];
   nodes[7].next_node = nodes[6];
   
-  nodes[4].to_node = nodes[0].next_node;
-  nodes[5].to_node = nodes[1].next_node;
-  nodes[6].to_node = nodes[2].next_node;
-  nodes[7].to_node = nodes[3].next_node;
-  nodes[4].from_node = nodes[0];
-  nodes[5].from_node = nodes[1];
-  nodes[6].from_node = nodes[2];
-  nodes[7].from_node = nodes[3];
+  frames[0].next_node = frames[6];
+  frames[1].next_node = frames[0];
+  frames[2].next_node = frames[3];
+  frames[3].next_node = frames[1];
+  
+  frames[4].next_node = frames[2];
+  frames[5].next_node = frames[4];
+  frames[6].next_node = frames[7];
+  frames[7].next_node = frames[5];
+  
+  nodes[0].to_node = frames[0].next_node;
+  nodes[1].to_node = frames[1].next_node;
+  nodes[2].to_node = frames[2].next_node;
+  nodes[3].to_node = frames[3].next_node;
+  nodes[4].to_node = frames[4].next_node;
+  nodes[5].to_node = frames[5].next_node;
+  nodes[6].to_node = frames[6].next_node;
+  nodes[7].to_node = frames[7].next_node;
+  nodes[8].to_node = nodes[0].next_node;
+  nodes[9].to_node = nodes[1].next_node;
+  nodes[10].to_node = nodes[2].next_node;
+  nodes[11].to_node = nodes[3].next_node;
+  nodes[12].to_node = nodes[4].next_node;
+  nodes[13].to_node = nodes[5].next_node;
+  nodes[14].to_node = nodes[6].next_node;
+  nodes[15].to_node = nodes[7].next_node;
+  nodes[0].from_node = frames[0];
+  nodes[1].from_node = frames[1];
+  nodes[2].from_node = frames[2];
+  nodes[3].from_node = frames[3];
+  nodes[4].from_node = frames[4];
+  nodes[5].from_node = frames[5];
+  nodes[6].from_node = frames[6];
+  nodes[7].from_node = frames[7];
+  nodes[8].from_node = nodes[0];
+  nodes[9].from_node = nodes[1];
+  nodes[10].from_node = nodes[2];
+  nodes[11].from_node = nodes[3];
+  nodes[12].from_node = nodes[4];
+  nodes[13].from_node = nodes[5];
+  nodes[14].from_node = nodes[6];
+  nodes[15].from_node = nodes[7];
 }
 
-void createCube(Node[] nodes, Node[] frames, int side_len, int up) {
-    nodes[0] = new Node(new PVector(side, side+up, side));
+void createCube(Node[] nodes, Node[] frames, int side, int up) {
+  nodes[0] = new Node(new PVector(side, side+up, side));
   nodes[1] = new Node(new PVector(side, -side+up, side));
   nodes[2] = new Node(new PVector(side, side+up, -side));
   nodes[3] = new Node(new PVector(side, -side+up, -side));
@@ -250,33 +294,42 @@ void createCube(Node[] nodes, Node[] frames, int side_len, int up) {
   nodes[6] = new Node(new PVector(-side, side+up, -side));
   nodes[7] = new Node(new PVector(-side, -side+up, -side));
   
-  nodes[8] = new Node(new PVector(side, side+up, side));
-  nodes[9] = new Node(new PVector(side, -side+up, side));
-  nodes[10] = new Node(new PVector(side, side+up, -side));
-  nodes[11] = new Node(new PVector(side, -side+up, -side));
-  nodes[12] = new Node(new PVector(-side, side+up, side));
-  nodes[13] = new Node(new PVector(-side, -side+up, side));
-  nodes[14] = new Node(new PVector(-side, side+up, -side));
-  nodes[15] = new Node(new PVector(-side, -side+up, -side));
+  frames[0] = new Node(new PVector(side, side+up, side));
+  frames[1] = new Node(new PVector(side, -side+up, side));
+  frames[2] = new Node(new PVector(side, side+up, -side));
+  frames[3] = new Node(new PVector(side, -side+up, -side));
+  frames[4] = new Node(new PVector(-side, side+up, side));
+  frames[5] = new Node(new PVector(-side, -side+up, side));
+  frames[6] = new Node(new PVector(-side, side+up, -side));
+  frames[7] = new Node(new PVector(-side, -side+up, -side));
+
+  frames[0].next_node = frames[1];
+  frames[1].next_node = frames[3];
+  frames[2].next_node = frames[6];
+  frames[3].next_node = frames[2];
   
-  nodes[0].next_node = nodes[1];
-  nodes[1].next_node = nodes[3];
-  nodes[2].next_node = nodes[0];
-  nodes[3].next_node = nodes[2];
+  frames[4].next_node = frames[5];
+  frames[5].next_node = frames[7];
+  frames[6].next_node = frames[4];
+  frames[7].next_node = frames[0];
   
-  nodes[4].next_node = nodes[5];
-  nodes[5].next_node = nodes[7];
-  nodes[6].next_node = nodes[0];
-  nodes[7].next_node = nodes[6];
+  nodes[0].to_node = frames[0].next_node;
+  nodes[1].to_node = frames[1].next_node;
+  nodes[2].to_node = frames[2].next_node;
+  nodes[3].to_node = frames[3].next_node;
+  nodes[4].to_node = frames[4].next_node;
+  nodes[5].to_node = frames[5].next_node;
+  nodes[6].to_node = frames[6].next_node;
+  nodes[7].to_node = frames[7].next_node;
   
-  nodes[4].to_node = nodes[0].next_node;
-  nodes[5].to_node = nodes[1].next_node;
-  nodes[6].to_node = nodes[2].next_node;
-  nodes[7].to_node = nodes[3].next_node;
-  nodes[4].from_node = nodes[0];
-  nodes[5].from_node = nodes[1];
-  nodes[6].from_node = nodes[2];
-  nodes[7].from_node = nodes[3];
+  nodes[0].from_node = frames[0];
+  nodes[1].from_node = frames[1];
+  nodes[2].from_node = frames[2];
+  nodes[3].from_node = frames[3];
+  nodes[4].from_node = frames[4];
+  nodes[5].from_node = frames[5];
+  nodes[6].from_node = frames[6];
+  nodes[7].from_node = frames[7];
 }
 
 void createOne(Node[] nodes, Node[] frames, int side, int up) {
@@ -290,17 +343,16 @@ void createOne(Node[] nodes, Node[] frames, int side, int up) {
   frames[5] = new Node(new PVector(-side, -side+up, side));
   frames[6] = new Node(new PVector(-side, side+up, -side));
   frames[7] = new Node(new PVector(-side, -side+up, -side));
+  frames[0].next_node = frames[1];
+  frames[1].next_node = frames[3];
+  frames[2].next_node = frames[6];
+  frames[3].next_node = frames[2];
   
-  frames[0].next_node = nodes[1];
-  frames[1].next_node = nodes[3];
-  frames[2].next_node = nodes[6];
-  frames[3].next_node = nodes[2];
-  
-  frames[4].next_node = nodes[5];
-  frames[5].next_node = nodes[7];
-  frames[6].next_node = nodes[0];
-  frames[7].next_node = nodes[6];
-  
+  frames[4].next_node = frames[5];
+  frames[5].next_node = frames[7];
+  frames[6].next_node = frames[4];
+  frames[7].next_node = frames[0];
+    
   nodes[0].to_node = frames[0].next_node;
   nodes[0].from_node = frames[0];
 }
@@ -318,19 +370,20 @@ void createTwo(Node[] nodes, Node[] frames, int side, int up) {
   frames[6] = new Node(new PVector(-side, side+up, -side));
   frames[7] = new Node(new PVector(-side, -side+up, -side));
   
-  frames[0].next_node = nodes[1];
-  frames[1].next_node = nodes[3];
-  frames[2].next_node = nodes[6];
-  frames[3].next_node = nodes[2];
+  frames[0].next_node = frames[1];
+  frames[1].next_node = frames[3];
+  frames[2].next_node = frames[6];
+  frames[3].next_node = frames[2];
   
-  frames[4].next_node = nodes[5];
-  frames[5].next_node = nodes[7];
-  frames[6].next_node = nodes[0];
-  frames[7].next_node = nodes[6];
-  
+  frames[4].next_node = frames[5];
+  frames[5].next_node = frames[7];
+  frames[6].next_node = frames[4];
+  frames[7].next_node = frames[0];
+    
   nodes[0].to_node = frames[0].next_node;
-  nodes[0].from_node = frames[0];
   nodes[1].to_node = frames[1].next_node;
+  
+  nodes[0].from_node = frames[0];
   nodes[1].from_node = frames[1];
 }
 
@@ -349,36 +402,82 @@ void createFour(Node[] nodes, Node[] frames, int side, int up) {
   frames[6] = new Node(new PVector(-side, side+up, -side));
   frames[7] = new Node(new PVector(-side, -side+up, -side));
   
-  frames[0].next_node = nodes[1];
-  frames[1].next_node = nodes[3];
-  frames[2].next_node = nodes[6];
-  frames[3].next_node = nodes[2];
+  frames[0].next_node = frames[1];
+  frames[1].next_node = frames[3];
+  frames[2].next_node = frames[6];
+  frames[3].next_node = frames[2];
   
-  frames[4].next_node = nodes[5];
-  frames[5].next_node = nodes[7];
-  frames[6].next_node = nodes[0];
-  frames[7].next_node = nodes[6];
-  
+  frames[4].next_node = frames[5];
+  frames[5].next_node = frames[7];
+  frames[6].next_node = frames[4];
+  frames[7].next_node = frames[0];
+    
   nodes[0].to_node = frames[0].next_node;
-  nodes[0].from_node = frames[0];
   nodes[1].to_node = frames[1].next_node;
-  nodes[1].from_node = frames[1];
   nodes[2].to_node = frames[2].next_node;
-  nodes[2].from_node = frames[2];
   nodes[3].to_node = frames[3].next_node;
+
+  
+  nodes[0].from_node = frames[0];
+  nodes[1].from_node = frames[1];
+  nodes[2].from_node = frames[2];
   nodes[3].from_node = frames[3];
 }
 
-void createTetrahedron(Node[] nodes, Node[] frames, int side_len, int up) { 
-  nodes[0] = new Node(new PVector(side_len*sqrt(8/9), 0+up, -(side_len)/3));
-  nodes[1] = new Node(new PVector(-side_len*sqrt(2/9), side_len*sqrt(2/3)+up, -(side_len)/3));
-  nodes[2] = new Node(new PVector(-side_len*sqrt(2/9), -side_len*sqrt(2/3)+up, -(side_len)/(3)));
-  nodes[3] = new Node(new PVector(0, up, -side_len));
+void createDualTetrahedron(Node[] nodes, Node[] frames, int side_len, int up) {
+  nodes[0] = new Node(new PVector(side_len, side_len+up, side_len));
+  nodes[1] = new Node(new PVector(side_len, -side_len+up, -side_len));
+  nodes[2] = new Node(new PVector(-side_len, side_len+up, -side_len));
+  nodes[3] = new Node(new PVector(-side_len, -side_len+up, side_len));
+
+  nodes[4] = new Node(new PVector(side_len, side_len+up, side_len));
+  nodes[5] = new Node(new PVector(side_len, -side_len+up, -side_len));
+  nodes[6] = new Node(new PVector(-side_len, side_len+up, -side_len));
+  nodes[7] = new Node(new PVector(-side_len, -side_len+up, side_len));
   
-  frames[0] = new Node(new PVector(side_len*sqrt(8/9), 0+up, -(side_len)/3));
-  frames[1] = new Node(new PVector(-side_len*sqrt(2/9), side_len*sqrt(2/3)+up, -(side_len)/3));
-  frames[2] = new Node(new PVector(-side_len*sqrt(2/9), -side_len*sqrt(2/3)+up, -(side_len)/(3)));
-  frames[3] = new Node(new PVector(0, up, -side_len));
+  frames[0] = new Node(new PVector(side_len, side_len+up, side_len));
+  frames[1] = new Node(new PVector(side_len, -side_len+up, -side_len));
+  frames[2] = new Node(new PVector(-side_len, side_len+up, -side_len));
+  frames[3] = new Node(new PVector(-side_len, -side_len+up, side_len));
+  
+  frames[0].next_node = frames[1];
+  frames[1].next_node = frames[2];
+  frames[2].next_node = frames[3];
+  frames[3].next_node = frames[0];
+
+  nodes[0].next_node = nodes[3];
+  nodes[1].next_node = nodes[0];
+  nodes[2].next_node = nodes[1];
+  nodes[3].next_node = nodes[2];
+
+  nodes[0].to_node = frames[0].next_node;
+  nodes[1].to_node = frames[1].next_node;
+  nodes[2].to_node = frames[2].next_node;
+  nodes[3].to_node = frames[3].next_node;
+  nodes[4].to_node = nodes[0].next_node;
+  nodes[5].to_node = nodes[1].next_node;
+  nodes[6].to_node = nodes[2].next_node;
+  nodes[7].to_node = nodes[3].next_node;
+  nodes[0].from_node = frames[0];
+  nodes[1].from_node = frames[1];
+  nodes[2].from_node = frames[2];
+  nodes[3].from_node = frames[3];
+  nodes[4].from_node = nodes[0];
+  nodes[5].from_node = nodes[1];
+  nodes[6].from_node = nodes[2];
+  nodes[7].from_node = nodes[3];
+}
+
+void createTetrahedron(Node[] nodes, Node[] frames, int side_len, int up) { 
+  nodes[0] = new Node(new PVector(side_len, side_len+up, side_len));
+  nodes[1] = new Node(new PVector(side_len, -side_len+up, -side_len));
+  nodes[2] = new Node(new PVector(-side_len, side_len+up, -side_len));
+  nodes[3] = new Node(new PVector(-side_len, -side_len+up, side_len));
+  
+  frames[0] = new Node(new PVector(side_len, side_len+up, side_len));
+  frames[1] = new Node(new PVector(side_len, -side_len+up, -side_len));
+  frames[2] = new Node(new PVector(-side_len, side_len+up, -side_len));
+  frames[3] = new Node(new PVector(-side_len, -side_len+up, side_len));
   
   frames[0].next_node = frames[1];
   frames[1].next_node = frames[2];
@@ -396,64 +495,11 @@ void createTetrahedron(Node[] nodes, Node[] frames, int side_len, int up) {
 }
 
 void createNodes(Node[][] nodes, Node[][] frames) {
-  createTetrahedron(nodes[0], frames[0], 20, 50);
-  createCubeInCube(nodes[1], 20, 50);
-  /*
-  nodes[0][0] = new Node(new PVector(20.0, -100.0, 20.0));
-  nodes[0][1] = new Node(new PVector(-20.0, -100.0, 20.0));
-
-  nodes[0][1].connections.add(nodes[0][0]);
-  
-  frame[0][0] = new Node(new PVector(20.0, -100.0, 20.0));
-  frame[0][1] = new Node(new PVector(-20.0, -100.0, 20.0));
-  frame[0][2] = new Node(new PVector(20.0, -100.0, -20.0));
-  frame[0][3] = new Node(new PVector(-20.0, -100.0, -20.0));
-  
-  frame[0][0].next_node = frame[0][1];
-  frame[0][1].next_node = frame[0][3];
-  frame[0][2].next_node = frame[0][0];
-  frame[0][3].next_node = frame[0][2];
-
-  nodes[0][0].to_node = frame[0][0].next_node;
-  nodes[0][1].to_node = frame[0][1].next_node;
-  nodes[0][0].from_node = frame[0][0];
-  nodes[0][1].from_node = frame[0][1];
-  
-  nodes[1][0] = new Node(new PVector(20.0, -100.0, 20.0));
-  nodes[1][1] = new Node(new PVector(-20.0, -100.0, 20.0));
-  nodes[1][2] = new Node(new PVector(20.0, -100.0, -20.0));
-  nodes[1][3] = new Node(new PVector(-20.0, -100.0, -20.0));
-  
-  nodes[1][0].connections.add(nodes[1][1]);
-  nodes[1][0].connections.add(nodes[1][2]);
-  nodes[1][1].connections.add(nodes[1][3]);
-  nodes[1][2].connections.add(nodes[1][3]);
-  
-  frame[1][0] = new Node(new PVector(20.0, -100.0, 20.0));
-  frame[1][1] = new Node(new PVector(-20.0, -100.0, 20.0));
-  frame[1][2] = new Node(new PVector(20.0, -100.0, -20.0));
-  frame[1][3] = new Node(new PVector(-20.0, -100.0, -20.0));
-  frame[1][4] = new Node(new PVector(20.0, -140.0, 20.0));
-  frame[1][5] = new Node(new PVector(-20.0, -140.0, 20.0));
-  frame[1][6] = new Node(new PVector(20.0, -140.0, -20.0));
-  frame[1][7] = new Node(new PVector(-20.0, -140.0, -20.0));
-  
-  frame[1][0].next_node = frame[1][1];
-  frame[1][1].next_node = frame[1][3];
-  frame[1][2].next_node = frame[1][0];
-  frame[1][3].next_node = frame[1][7];
-  frame[1][4].next_node = frame[1][5];
-  frame[1][5].next_node = frame[1][0];
-  frame[1][6].next_node = frame[1][4];
-  frame[1][7].next_node = frame[1][6];
-
-  nodes[1][0].to_node = frame[1][0].next_node;
-  nodes[1][1].to_node = frame[1][1].next_node;
-  nodes[1][2].to_node = frame[1][2].next_node;
-  nodes[1][3].to_node = frame[1][3].next_node;
-  nodes[1][0].from_node = frame[1][0];
-  nodes[1][1].from_node = frame[1][1];
-  nodes[1][2].from_node = frame[1][2];
-  nodes[1][3].from_node = frame[1][3];
-*/
+  createOne(nodes[0], frames[0], 50, -100);
+  createTwo(nodes[1], frames[1], 50, -100);
+  createFour(nodes[2], frames[2], 50, -100);
+  createCube(nodes[3], frames[3], 50, -100);
+  createTetrahedron(nodes[4], frames[4], 50, -100);
+  createDualTetrahedron(nodes[5], frames[5], 50, -100);
+  createCubeInCube(nodes[6], frames[6], 50, -100);
 }

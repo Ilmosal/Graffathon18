@@ -16,8 +16,8 @@ final float rotateSpeed = 16;
 
 final float minOffset = 2 * sphereRadius + padding;
 
-Node[][] nodes = new Node[3][];
-Node[][] frames = new Node[3][];
+Node[][] nodes = new Node[8][];
+Node[][] frames = new Node[8][];
 
 float beat = 0.0, totalBeat = 0.0;
 int BPM = 128;
@@ -37,12 +37,21 @@ void setup() {
   
   colorMode(HSB, 360, 100, 100);
   
-  nodes[0] = new Node[4];
-  nodes[1] = new Node[16];
-  nodes[2] = new Node[24];
+  nodes[0] = new Node[1];
+  nodes[1] = new Node[2];
+  nodes[2] = new Node[4];
+  nodes[3] = new Node[8];
+  nodes[4] = new Node[4];
+  nodes[5] = new Node[8];
+  nodes[6] = new Node[16];
   
-  frames[0] = new Node[4];
-  frames[2] = new Node[24];
+  frames[0] = new Node[8];
+  frames[1] = new Node[8];
+  frames[2] = new Node[8];
+  frames[3] = new Node[8];
+  frames[4] = new Node[4];
+  frames[5] = new Node[4];
+  frames[6] = new Node[8];
   
   createNodes(nodes, frames);
   createScenes();
@@ -78,119 +87,6 @@ void setup() {
     }
   }
   moonlander.start("localhost", 1339, "synkkifilu");
-}
-
-float optimalFrac(boolean min, int[] counts) {
-  float bestFrac = counts[0] / maxCounts[0];
-  for (int i = 1; i < layers; i++) {
-    float frac = (float) counts[i] / maxCounts[i];
-    if (min ? frac < bestFrac : frac > bestFrac) {
-      bestFrac = frac;
-    }
-  }
-  return bestFrac;
-}
-
-void setShape(Node[] shape) {  
-  int[] counts = new int[layers];
-  int usedCount = 0;
-  // move the end locations to be starts and count dots starting on each layer
-  for (int i = 0; i < dots.length; i++){
-    Dot dot = dots[i];
-    dot.start = dot.end.copy();
-    dot.end.pool = true;
-    if (dot.start.pool) {
-      counts[dot.end.layer]++;
-    } else {
-      usedCount++;
-    }
-  }
-  // spread the dots starting in the pool evenly in slots
-  Dot[][] newSlots = new Dot[layers][];
-  for (int i = 0; i < layers; i++) {
-    newSlots[i] = new Dot[maxCounts[i]];
-    int seen = 0;
-    for (int j = 0; j < maxCounts[i]; j++) {
-      Dot dot = slotsUsed[i][j];
-      if (dot != null && dot.start.pool) {
-        dot.end.slot = seen * maxCounts[dot.end.layer] / counts[dot.end.layer];
-        seen++;
-        newSlots[dot.end.layer][dot.end.slot] = dot;
-      }
-    }
-  }
-  slotsUsed = newSlots;
-  // choose dots to the shape
-  int shaped = 0;
-  while (shaped < shape.length) {
-    Dot dot;
-    if (usedCount > 0) {
-      // find a dot already in the previous shape
-      do {
-        dot = dots[(int) random(dots.length)];
-      } while (!dot.end.pool || dot.start.pool);
-      usedCount--;
-    } else {
-      // find a maximally full layer to take from
-      float maxFrac = optimalFrac(false, counts);
-      int layer;
-      do {
-        layer = (int) random(layers);
-      } while ((float) counts[layer] / maxCounts[layer] < maxFrac);
-      // find a dot on that layer
-      do {
-        dot = slotsUsed[layer][(int) random(maxCounts[layer])];
-      } while (dot == null || !dot.end.pool);
-    }
-    // use the dot
-    dot.end.pool = false;
-    dot.end.node = shape[shaped];
-    // update counts
-    if (dot.start.pool) {
-      counts[dot.end.layer]--;
-      slotsUsed[dot.end.layer][dot.end.slot] = null;
-    }
-    shaped++;
-  }
-  // find free slots for the dots returning to the pool
-  for (int i = 0; i < dots.length; i++) {
-    Dot dot = dots[i];
-    if (dot.end.pool && !dot.start.pool) {
-      // find a minimally empty layer to insert in
-      float minFrac = optimalFrac(true, counts);
-      int layer;
-      do {
-        layer = (int) random(layers);
-      } while ((float) counts[layer] / maxCounts[layer] > minFrac);
-      // find a free slot
-      int slot;
-      do {
-        slot = (int) random(maxCounts[layer]);
-      } while (slotsUsed[layer][slot] != null);
-      // use the slot
-      dot.end.layer = layer;
-      dot.end.slot = slot;
-      counts[layer]++;
-      slotsUsed[layer][slot] = dot;
-    }
-  }
-  // spread the dots in each layer evenly
-  for (int i = 0; i < layers; i++) {
-    float seen = 0;
-    for (int j = 0; j < maxCounts[i]; j++) {
-      Dot dot = slotsUsed[i][j];
-      if (dot != null && dot.end.pool) {
-        dot.end.fracSlot = seen * maxCounts[dot.end.layer] / counts[dot.end.layer];
-        seen++;
-      }
-    }
-  }
-  //cam = new PeasyCam(this, 0, startY, 0, 400);
-  //cam.setSuppressRollRotationMode();
-  
-  createDots();
-  
-  moonlander.start("localhost", 1339, "syncdata.rocket");
 }
 
 PVector resolvePoolLoc(int layer, float x) {

@@ -3,10 +3,15 @@ Scene[] scenes;
 void createScenes() {
   scenes = new Scene[] {
     new IntroScene(-100),
-    new NodeScene(16, nodes[1]),
-    new TextScene(32, "graffathon", 0, -100, 0, PI / 12, PI / 6, 30, 0),
-    new TextScene(48, "demonimi", 0, -100, -70, PI / 6, PI / 2, 40, 1),
-    new NodeScene(64, nodes[0])
+    new TextScene(16, "graffathon", 0, -100, 0, PI / 12, PI / 6, 30, 0),
+    new TextScene(32, "demonimi", 0, -100, -70, PI / 6, PI / 2, 40, 1),
+    new NodeScene(48, nodes[0]),
+    new NodeScene(64, nodes[1]),
+    new NodeScene(80, nodes[2]),
+    new NodeScene(96, nodes[3]),
+    new NodeScene(112, nodes[4]),
+    new NodeScene(128, nodes[5]),
+    new NodeScene(144, nodes[6]),
   };
 }
 
