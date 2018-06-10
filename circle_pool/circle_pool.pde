@@ -16,8 +16,8 @@ final float rotateSpeed = 16;
 
 final float minOffset = 2 * sphereRadius + padding;
 
-final Node[][] nodes = new Node[3][];
-final Node[][] frame = new Node[3][];
+Node[][] nodes = new Node[3][];
+Node[][] frames = new Node[3][];
 
 float beat = 0.0, totalBeat = 0.0;
 int BPM = 128;
@@ -37,9 +37,16 @@ void setup() {
   moonlander = Moonlander.initWithSoundtrack(this, "../../Exit the Premises.mp3", BPM, 8);
   //fullScreen(P3D);
   
-  createNodes();
-  createScenes();
+  nodes[0] = new Node[4];
+  nodes[1] = new Node[16];
+  nodes[2] = new Node[24];
   
+  frames[0] = new Node[4];
+  frames[2] = new Node[24];
+  
+  createNodes(nodes, frames);
+  createScenes();
+ 
   colorMode(HSB, 360, 100, 100);
   
   //cam = new PeasyCam(this, 0, startY, 0, 400);
@@ -70,7 +77,6 @@ void setup() {
       slotsUsed[layer][j] = dot;
     }
   }
-  
   moonlander.start("localhost", 1339, "synkkifilu");
 }
 
@@ -85,7 +91,7 @@ float optimalFrac(boolean min, int[] counts) {
   return bestFrac;
 }
 
-void setShape(Node[] shape) {
+void setShape(Node[] shape) {  
   int[] counts = new int[layers];
   int usedCount = 0;
   // move the end locations to be starts and count dots starting on each layer
@@ -215,7 +221,7 @@ void draw() {
   
   totalBeat = (float) moonlander.getCurrentTime() * BPM / 60.0;
   beat = totalBeat % 1;
-  
+ 
   updateCamera(totalBeat);
   
   // find current scene
@@ -238,7 +244,7 @@ void draw() {
   float transitionLen = 1;
   float offset = min(1, (totalBeat - sceneStart) / transitionLen);
   float phase = (1 - cos(offset * PI)) / 2;
-  
+ 
   scene.initFrame(totalBeat - sceneStart, phase);
   
   for (int i = 0; i < dots.length; i++) {
@@ -256,6 +262,7 @@ void draw() {
           map(phase, 0, 1, startLoc.y, endLoc.y),
           map(phase, 0, 1, startLoc.z, endLoc.z));
     }
+    
     dot.cache_loc = loc;
     fill(dot.clr);
     pushMatrix();
