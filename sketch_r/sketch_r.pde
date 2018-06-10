@@ -129,7 +129,7 @@ void setup() {
   
   shady = loadShader("shaderTestFrag.glsl", "shaderTestVert.glsl");
   //shady.set("fraction", 1.0);
-  moonlander.start();
+  /*moonlander.start();
   for (int i = 0; i < 26; i++) {
     print("[");
     for (int j = 0; j < letters[i][0].length; j++) {
@@ -137,37 +137,28 @@ void setup() {
       if(j!=letters[i][0].length-1)print(",");
     }
     print("]");
-  }
+  }*/
 }
 
 void draw() {
   moonlander.update();
-  shader(shady);
+  //shader(shady);
   hax ++;
-  if(hax%300==0){
+  if(hax==0){
     int[] distr = {dots-8,8,0,0, 0,0,0,0, 0,0};
     setRandomShape(distr);
   }
-  if(hax%300==50){
+  if(hax==2){
     resetPools();
-  }
-  if(hax%300==100){
-    moveToPool(1, 2, 4);
-    moveToPool(1, 0, 4);
-  }
-  if(hax%300==150){
-    resetPools();
-  }
-  if(hax%300==200){
     setShape(2, xs.length);
   }
-  if(hax%300==250){
+  if(hax%50==0){  
     resetPools();
   }
   background(50);
   camera(width/2, height/2, 300, width/2, height/2, 0, 0, 1, 0);
   
-  translate(300,0,-1500);
+  translate(-200,0,-2500);
   
   pointLight(200, 200, 200, width/2-500, height/2+20, 200);
   pointLight(200, 200, 200, width/2, height/2+10, -100);
@@ -197,7 +188,12 @@ void draw() {
     translate(1000 * x + noise_coeff*random(10), -100 * y + noise_coeff*random(10), -400 * z + noise_coeff*random(10));
     sphere(20);
     popMatrix();
-  }
+  }  
+  PImage glow = get();
+  glow.resize(0, width/4);
+  glow.filter(BLUR, 1);
+  glow.resize(0,width);
+  blend(glow, 0, 0, glow.width,glow.height, 0,0,width,height, ADD);
 }
 
 // returns array of x, y and z
