@@ -127,8 +127,8 @@ void setup() {
   }
   resetPools();//sets the start versions of the arrays and everything
   
-  shady = loadShader("ToonFrag.glsl", "ToonVert.glsl");
-  shady.set("fraction", 1.0);
+  shady = loadShader("shaderTestFrag.glsl", "shaderTestVert.glsl");
+  //shady.set("fraction", 1.0);
   moonlander.start();
   for (int i = 0; i < 26; i++) {
     print("[");
