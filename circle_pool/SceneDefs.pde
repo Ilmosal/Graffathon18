@@ -4,8 +4,9 @@ void createScenes() {
   scenes = new Scene[] {
     new IntroScene(-100),
     new NodeScene(16, nodes[1]),
-    new TextScene(32, "purkka", -70, -100, 0, 0, 0, 40),
-    new TextScene(48, "demonimi", 0, -100, -70, PI / 6, PI / 2, 40)
+    new TextScene(32, "graffathon", 0, -100, 0, PI / 12, PI / 6, 30, 0),
+    new TextScene(48, "demonimi", 0, -100, -70, PI / 6, PI / 2, 40, 1),
+    new NodeScene(64, nodes[0])
   };
 }
 
@@ -43,14 +44,16 @@ class NodeScene extends Scene {
     float blink = (float) moonlander.getValue("blink");
     for (int i = 0; i < dots.length; i++) {
       Dot dot = dots[i];
-      float startBright = dot.start.pool ? blink : 255;
-      float endBright = dot.end.pool ? blink : 255;
-      dot.clr = color(startBright * (1 - phase) + endBright * phase);
+      color startClr = dot.start.pool ? color(blink) : dot.start.node.clr;
+      color endClr = dot.end.pool ? color(blink) : dot.end.node.clr;
+      dot.clr = color(hue(startClr) * (1 - phase) + hue(endClr) * phase,
+          saturation(startClr) * (1 - phase) + saturation(endClr) * phase,
+          brightness(startClr) * (1 - phase) + brightness(endClr) * phase);
     }
   }
 }
 
-Node[] buildText(String text, float x, float y, float z, float pitch, float yaw, float scale) {
+Node[] buildText(String text, float x, float y, float z, float pitch, float yaw, float scale, int clrMode) {
   float[][] basePos = getDotString(text);
   float minX = basePos[0][0], maxX = basePos[0][0], minY = basePos[1][0], maxY = basePos[1][0];
   for (int i = 0; i < basePos[0].length; i++) {
@@ -75,6 +78,10 @@ Node[] buildText(String text, float x, float y, float z, float pitch, float yaw,
     float yy = py;
     float yz = cos(yaw) * pz - sin(yaw) * px;
     out[i] = new Node(new PVector(x + yx, y + yy, z + yz));
+    if (clrMode == 1) {
+      println(basePos[2][i]);
+      out[i].clr = color(360.0 * basePos[2][i] / text.length(), 100, 100);
+    }
   }
   return out;
 }
@@ -84,7 +91,7 @@ class TextScene extends NodeScene {
   String text;
   float x, y, z, pitch, yaw, scale;
   
-  TextScene(int start, String text, float x, float y, float z, float pitch, float yaw, float scale) {
-    super(start, buildText(text, x, y, z, pitch, yaw, scale));
+  TextScene(int start, String text, float x, float y, float z, float pitch, float yaw, float scale, int clrMode) {
+    super(start, buildText(text, x, y, z, pitch, yaw, scale, clrMode));
   }
 }

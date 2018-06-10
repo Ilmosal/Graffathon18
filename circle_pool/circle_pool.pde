@@ -23,8 +23,6 @@ float beat = 0.0, totalBeat = 0.0;
 int BPM = 128;
 
 Dot[] dots;
-Dot[][] slotsUsed = new Dot[layers][];
-int[] maxCounts = new int[layers];
 
 PeasyCam cam;
 
@@ -34,8 +32,10 @@ final float startY = -40;
 
 void setup() {
   size(1024, 576, P3D);
-  moonlander = Moonlander.initWithSoundtrack(this, "../../Exit the Premises.mp3", BPM, 8);
   //fullScreen(P3D);
+  moonlander = Moonlander.initWithSoundtrack(this, "../../Exit the Premises.mp3", BPM, 8);
+  
+  colorMode(HSB, 360, 100, 100);
   
   nodes[0] = new Node[4];
   nodes[1] = new Node[16];
@@ -185,6 +185,12 @@ void setShape(Node[] shape) {
       }
     }
   }
+  //cam = new PeasyCam(this, 0, startY, 0, 400);
+  //cam.setSuppressRollRotationMode();
+  
+  createDots();
+  
+  moonlander.start("localhost", 1339, "syncdata.rocket");
 }
 
 PVector resolvePoolLoc(int layer, float x) {
@@ -280,10 +286,11 @@ void draw() {
       line(n.pos.x, n.pos.y, n.pos.z, dots[i].end.node.pos.x, dots[i].end.node.pos.y, dots[i].end.node.pos.z); 
     }
   }
+  /*//debug cube
   stroke(255);
   noFill();
   pushMatrix();
   translate(0, -100, 0);
   box(20);
-  popMatrix();
+  popMatrix();*/
 }
