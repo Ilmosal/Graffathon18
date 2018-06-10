@@ -11,13 +11,13 @@ import ddf.minim.ugens.*;
 
 final int layers = 7;
 final int sphereRadius = 5;
-final int padding = 10;
+final int padding = 10; 
 final float rotateSpeed = 5;
 
 final float minOffset = 2 * sphereRadius + padding;
 
-final Node[][] nodes = new Node[3][];
-final Node[][] frame = new Node[3][];
+Node[][] nodes = new Node[3][];
+Node[][] frames = new Node[3][];
 
 float beat = 0.0;
 int BPM = 105;
@@ -33,6 +33,12 @@ Moonlander moonlander;
 final float startY = -40;
 
 void setup() {
+  nodes[0] = new Node[4];
+  frames[0] = new Node[4];
+
+  nodes[1] = new Node[16];
+  frames[1] = null;
+
   size(800, 600, P3D);
   moonlander = Moonlander.initWithSoundtrack(this, "graffathonsong.mp3", BPM, 32);
   //fullScreen(P3D);
@@ -69,7 +75,7 @@ void setup() {
     shapes[i] = coords;
   }
   */
-  createNodes();
+  createNodes(nodes, frames);
   
   colorMode(HSB, 360, 100, 100);
   cam = new PeasyCam(this, 0, startY, 0, 400);
@@ -102,9 +108,7 @@ void setup() {
       slotsUsed[layer][j] = dot;
     }
   }
-  
   moonlander.start("localhost", 1339, "synkkifilu");
-  setShape(nodes[1]);
 }
 
 float optimalFrac(boolean min, int[] counts) {
@@ -118,7 +122,7 @@ float optimalFrac(boolean min, int[] counts) {
   return bestFrac;
 }
 
-void setShape(Node[] shape) {
+void setShape(Node[] shape) {  
   int[] counts = new int[layers];
   int usedCount = 0;
   // move the end locations to be starts and count dots starting on each layer
@@ -248,31 +252,12 @@ void draw() {
   fill(128);
   noStroke();
   float cur_time = (float) moonlander.getCurrentTime();
-  
   beat = (((cur_time*BPM)/60.0) % 4)/4;
   
   if (old_beat > beat) {
     bar++;
   } 
   old_beat = beat;
-  
-  /*
-  if (millis() / period > shapeNo) {
-    shapeNo++;
-    setShape(nodes);
-  }
-  */
-  
-  if (bar == 9 && scene == 1) {
-    scene++;
-    setShape(nodes[scene]);    
-  }
-  
-  /*
-  if (moonlander.getCurrentTime() > 10.0 && scene == 0) {
-    scene++;
-    setShape(nodes[1]);
-  }*/
   
   float phase = scene == 0 ? 1 : (1 - cos(min(1, (cur_time - 10)) * PI)) / 2;
   
@@ -296,6 +281,7 @@ void draw() {
           map(phase, 0, 1, startLoc.y, endLoc.y),
           map(phase, 0, 1, startLoc.z, endLoc.z));
     }
+    
     dot.cache_loc = loc;
     pushMatrix();
     translate(loc.x, loc.y, loc.z);
