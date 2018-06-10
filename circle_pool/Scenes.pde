@@ -502,4 +502,11 @@ void createNodes(Node[][] nodes, Node[][] frames) {
   createTetrahedron(nodes[4], frames[4], 50, -100);
   createDualTetrahedron(nodes[5], frames[5], 50, -100);
   createCubeInCube(nodes[6], frames[6], 50, -100);
+  for (int i = 0; i < nodes.length; i++) {
+    if (nodes[i] == null) continue;
+    for (int j = 0; j < nodes[i].length; j++) {
+      if (nodes[i][j] != null)
+        nodes[i][j].clr = color(60 * i, 80, 100);
+    }
+  }
 }

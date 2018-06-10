@@ -1,2 +1,3 @@
-# Graffathon18
-Doing some graphics
+OutOfTime by Team Epatoivo
+
+Music: Exit the Premises by Kevin MacLeod

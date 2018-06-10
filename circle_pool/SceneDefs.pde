@@ -3,9 +3,9 @@ Scene[] scenes;
 void createScenes() {
   scenes = new Scene[] {
     new IntroScene(-100),
-    new TextScene(16, "graffathon", 0, -100, 0, 0, 0, 30, 0),
+    new TextScene(16, "graffathon18", 0, -100, 0, 0, 0, 30, 9),
     new TextScene(32, "team epatoivo", 0, -100, 0, PI / 12, PI * 0.6, 30, 0),
-    new TextScene(48, "demonimi", 0, -100, -70, PI / 6, PI / 2, 40, 1),
+    new TextScene(48, "outoftime", 0, -100, 0, PI / 6, PI / 2, 40, 1),
     new NodeScene(64, nodes[0]),
     new NodeScene(80, nodes[1]),
     new NodeScene(96, nodes[2]),
@@ -13,17 +13,13 @@ void createScenes() {
     new NodeScene(128, nodes[4]),
     new NodeScene(144, nodes[5]),
     new NodeScene(160, nodes[6]),
-    new TextScene(240, "purkka", 0, -100, 0, PI / 6, PI / 4, 40, 0),
-    new TextScene(248, "herpior", 0, -100, 0, PI / 6, PI / 4, 40, 0),
-    new TextScene(256, "cubanfrog", 0, -100, 0, PI / 6, PI / 4, 40, 0),
-    new TextScene(264, "randomjaba", 0, -100, 0, PI / 6, PI / 4, 40, 0),
-    new TextScene(272, "greetz to", 0, -100, 0, PI / 6, PI / 4, 40, 0),
-    new TextScene(276, "greet I", 0, -100, 0, PI / 6, PI / 4, 40, 0),
-    new TextScene(280, "greet II", 0, -100, 0, PI / 6, PI / 4, 40, 0),
-    new TextScene(284, "greet III", 0, -100, 0, PI / 6, PI / 4, 40, 0),
-    new TextScene(288, "greet IV", 0, -100, 0, PI / 6, PI / 4, 40, 0),
-    new TextScene(292, "greet V", 0, -100, 0, PI / 6, PI / 4, 40, 0),
-    new TextScene(296, "thx for watching", 0, -100, 0, PI / 6, PI / 4, 40, 0),
+    new TextScene(240, "purkka", 0, -100, 0, PI / 6, PI / 8, 40, 3),
+    new TextScene(248, "qazhax", 0, -100, 0, PI / 6, 0, 40, 5),
+    new TextScene(256, "cubanfrog", 0, -100, 0, PI / 6, -PI / 12, 40, 8),
+    new TextScene(264, "joel", 0, -100, 0, PI / 6, PI / 8, 40, 6),
+    new TextScene(272, "greetz to", 0, -100, 0, 0, 0, 40, 7),
+    new TextScene(280, "we know nobody", -70, -100, 0, PI / 6, PI / 8, 40, 0),
+    new TextScene(288, "thx for watching", 0, -100, 0, PI / 6, 0, 40, 2),
     new IntroScene(304)
   };
 }
@@ -97,8 +93,23 @@ Node[] buildText(String text, float x, float y, float z, float pitch, float yaw,
     float yz = cos(yaw) * pz - sin(yaw) * px;
     out[i] = new Node(new PVector(x + yx, y + yy, z + yz));
     if (clrMode == 1) {
-      println(basePos[2][i]);
       out[i].clr = color(360.0 * basePos[2][i] / text.length(), 100, 100);
+    } else if (clrMode == 2) {
+      out[i].clr = color(156, 63, 89);
+    } else if (clrMode == 3) {
+      out[i].clr = color(156, 63, 89);
+    } else if (clrMode == 4) {
+      out[i].clr = color(49, 90, 100);
+    } else if (clrMode == 5) {
+      out[i].clr = color(173, 74, 100);
+    } else if (clrMode == 6) {
+      out[i].clr = color(325, 67, 100);
+    } else if (clrMode == 7) {
+      out[i].clr = color(352, 86, 94);
+    } else if (clrMode == 8) {
+      out[i].clr = color(39, 88, 91);
+    } else if (clrMode == 9) {
+      out[i].clr = color(120, 74, 90.6);
     }
   }
   return out;

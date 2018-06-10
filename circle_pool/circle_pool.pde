@@ -52,8 +52,8 @@ final float startY = -40;
 final boolean manualCam = false;
 
 void setup() {
-  size(1024, 576, P3D);
-  //fullScreen(P3D); 
+  //size(1024, 576, P3D);
+  fullScreen(P3D); 
   
   colorMode(HSB, 360, 100, 100);
   
@@ -82,19 +82,19 @@ void setup() {
   }
   
   // SOUND SETUP CHUNK
-  minim = new Minim(this);
-  jingle = minim.loadFile("/home/joel/Downloads/Disco con Tutti.mp3");
+  //minim = new Minim(this);
+  //jingle = minim.loadFile("../../Exit the Premises shorter.mp3");
   //jingle = minim.loadFile("/home/joel/Nextcloud/workspace/processing/Overworld.mp3");
   //jingle = minim.loadFile("../graffathonsong.mp3");
-  mc = new MinimController(jingle, 128, 8);
-  //moonlander = Moonlander.initWithSoundtrack(this, "../../Exit the Premises.mp3", BPM, 8);
-  moonlander = new Moonlander(this, mc);
+  //mc = new MinimController(jingle, 128, 8);
+  moonlander = Moonlander.initWithSoundtrack(this, "../Exit the Premises shorter.mp3", BPM, 8);
+  //moonlander = new Moonlander(this, mc);
   moonlander.start("localhost", 1339, "syncdata.rocket");
-  fft = new FFT(jingle.bufferSize(), jingle.sampleRate());
-  specSize = fft.specSize();
-  fftSmooth = new float[specSize];
-  fftPrev   = new float[specSize];
-  fftCurr   = new float[specSize]; 
+  //fft = new FFT(jingle.bufferSize(), jingle.sampleRate());
+  //specSize = fft.specSize();
+  //fftSmooth = new float[specSize];
+  //fftPrev   = new float[specSize];
+  //fftCurr   = new float[specSize]; 
   //jingle.play();
   
   createDots();
@@ -138,6 +138,7 @@ float sceneStart;
 Scene scene;
 
 void draw() {
+  noCursor();
   moonlander.update();
   noLights();
   ambientLight(0, 0, (float) moonlander.getValue("ambient"));
@@ -145,9 +146,9 @@ void draw() {
   background(0);
   
   // SOUND
-  fft.forward(jingle.mix);
-  fftReal = fft.getSpectrumReal();
-  fftImag = fft.getSpectrumImaginary();
+  //fft.forward(jingle.mix);
+  //fftReal = fft.getSpectrumReal();
+  //fftImag = fft.getSpectrumImaginary();
   
   totalBeat = (float) moonlander.getCurrentTime() * BPM / 60.0;
   beat = totalBeat % 1;
@@ -205,17 +206,17 @@ void draw() {
     
     dot.cache_loc = loc;
     // COLORFUL STUFF
-    int m = (int)map(i, 0, dots.length, 0, specSize);
-    fftCurr[i] = scale * (float)Math.log10(fftReal[m]*fftReal[m] + fftImag[m]*fftImag[m]);  
-    fftSmooth[i] = smoothing * fftSmooth[m] + ((1 - smoothing) * fftCurr[m]);
-    float abs_smooth = abs(fftSmooth[i]);
+    //int m = (int)map(i, 0, dots.length, 0, specSize);
+    //fftCurr[i] = scale * (float)Math.log10(fftReal[m]*fftReal[m] + fftImag[m]*fftImag[m]);  
+    //fftSmooth[i] = smoothing * fftSmooth[m] + ((1 - smoothing) * fftCurr[m]);
+    //float abs_smooth = abs(fftSmooth[i]);
     //print( abs_smooth + " ");
     //int specmap = (int)map(i, 0, dots.length, 1, 100 );
-    int hue = (int)map(abs_smooth, 0, 80, 1, 1000);
-    if (hue + color_loc > 1000 )
-      hue = (hue + color_loc) - 1000;
-    fill((hue + color_loc)%1000, 100, 100);
-    //fill(dot.clr);
+    //int hue = (int)map(abs_smooth, 0, 80, 1, 1000);
+    //if (hue + color_loc > 1000 )
+    //  hue = (hue + color_loc) - 1000;
+    //fill((hue + color_loc)%1000, 100, 100);
+    fill(dot.clr);
     pushMatrix();
     translate(loc.x, loc.y, loc.z);
     sphere(sphereRadius);
@@ -232,13 +233,14 @@ void draw() {
     }
   }
   
+  /*
   noFill();
   stroke(0, 100, 100);
   line(0, 0, 0, 1000, 0, 0);
   stroke(120, 100, 100);
   line(0, 0, 0, 0, 1000, 0);
   stroke(240, 100, 100);
-  line(0, 0, 0, 0, 0, 1000);
+  line(0, 0, 0, 0, 0, 1000);*/
   if (manualCam) {
     float[] pos = cam.getPosition();
     float[] center = cam.getLookAt();

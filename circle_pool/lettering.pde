@@ -238,7 +238,7 @@ float[] moveLetter(float[] points, float offset_x){
 }
 
 float getKerning(char prev, char curr){
-  if (prev == ' ' || curr == ' ') return 1.5;
+  if (prev == ' ' || curr == ' ' || prev == '1' || prev == '8' || curr == '1' || curr == '8') return 1.5;
   return kernings[prev - 'a'][curr - 'a'];
 }
 
@@ -246,6 +246,7 @@ float[][] getDotString(String stringy){
   stringy = stringy.toLowerCase();
   float[] x_points = {};
   float[] y_points = {};
+  float[] ltr_points = {};
   float offset = -1.5;
   char prev = ' ';
   for (int i=0;i<stringy.length();i++){
@@ -257,9 +258,12 @@ float[][] getDotString(String stringy){
     offset += kerning;
     x_points = concat(x_points, moveLetter(letter[0],offset)); 
     y_points = concat(y_points, letter[1]);
+    float[] ltrs = new float[letter[0].length];
+    java.util.Arrays.fill(ltrs, i);
+    ltr_points = concat(ltr_points, ltrs);
     if (curr != ' ') prev = curr;
   }
-  float[][] points = {x_points, y_points};
+  float[][] points = {x_points, y_points, ltr_points};
   return points;
 }
 
