@@ -10,10 +10,12 @@ import ddf.minim.signals.*;
 import ddf.minim.spi.*;
 import ddf.minim.ugens.*;
 
-final int layers = 9;
+final int layers = 10;
 final int sphereRadius = 5;
 final int padding = 10;
 final float rotateSpeed = 16;
+final float waveHeight = 10;
+final float waveLength = 6;
 
 final float minOffset = 2 * sphereRadius + padding;
 
@@ -71,37 +73,9 @@ void setup() {
   
   createNodes(nodes, frames);
   createScenes();
- 
-  colorMode(HSB, 360, 100, 100);
   
   //cam = new PeasyCam(this, 0, startY, 0, 400);
   //cam.setSuppressRollRotationMode();
-  
-  // calculate max number of dots
-  int totalCount = 0;
-  for (int layer = 0; layer < layers; layer++) {
-    int count = 1;
-    // basic trigonometry to figure out the biggest n-gon we can fit
-    while (0.5 / sin(PI / count) <= layer) {
-      count++;
-    }
-    count--;
-    maxCounts[layer] = count;
-    totalCount += count;
-  }
-  // init the dots in the pool
-  dots = new Dot[totalCount];
-  for (int layer = 0, i = 0; layer < layers; layer++) {
-    slotsUsed[layer] = new Dot[maxCounts[layer]];
-    for (int j = 0; j < maxCounts[layer]; j++) {
-      Dot dot = dots[i++] = new Dot();
-      dot.start.pool = true;
-      dot.start.layer = layer;
-      dot.start.fracSlot = dot.start.slot = j;
-      dot.end = dot.start;
-      slotsUsed[layer][j] = dot;
-    }
-  }
   
   // SOUND SETUP CHUNK
   minim = new Minim(this);
@@ -111,13 +85,15 @@ void setup() {
   mc = new MinimController(jingle, 128, 8);
   //moonlander = Moonlander.initWithSoundtrack(this, "../../Exit the Premises.mp3", BPM, 8);
   moonlander = new Moonlander(this, mc);
-  moonlander.start("localhost", 1339, "synkkifilu");
+  moonlander.start("localhost", 1339, "syncdata.rocket");
   fft = new FFT(jingle.bufferSize(), jingle.sampleRate());
   specSize = fft.specSize();
   fftSmooth = new float[specSize];
   fftPrev   = new float[specSize];
   fftCurr   = new float[specSize]; 
   //jingle.play();
+  
+  createDots();
 }
 
 // DECIBEL LOG CHECK
@@ -134,7 +110,9 @@ PVector resolvePoolLoc(int layer, float x) {
   float radius = layer * minOffset;
   float speed = layer == 0 ? 0 : pow(-1, layer) * rotateSpeed / radius;
   float angle = TAU * x / maxCounts[layer] + speed * (float) moonlander.getCurrentTime();
-  return new PVector(sin(angle) * radius, 0, cos(angle) * radius);
+  float waviness = (float) moonlander.getValue("waviness"); 
+  float y = waviness * waveHeight * sin(totalBeat * PI + TAU / waveLength * layer);
+  return new PVector(sin(angle) * radius, y, cos(angle) * radius);
 }
 
 PVector resolveLoc(Location loc) {
@@ -169,6 +147,8 @@ void draw() {
   
   totalBeat = (float) moonlander.getCurrentTime() * BPM / 60.0;
   beat = totalBeat % 1;
+  
+  if (totalBeat >= 316) exit();
  
   updateCamera(totalBeat);
   
@@ -189,11 +169,13 @@ void draw() {
   
   println(sceneIndex, scene, totalBeat);
   
-  float transitionLen = 1;
+  float transitionLen = 2;
   float offset = min(1, (totalBeat - sceneStart) / transitionLen);
   float phase = (1 - cos(offset * PI)) / 2;
  
   scene.initFrame(totalBeat - sceneStart, phase);
+  
+  float shake = (float) moonlander.getValue("shake");
   
   for (int i = 0; i < dots.length; i++) {
     Dot dot = dots[i];  
@@ -210,6 +192,10 @@ void draw() {
           map(phase, 0, 1, startLoc.y, endLoc.y),
           map(phase, 0, 1, startLoc.z, endLoc.z));
     }
+    
+    loc.x += shake * noise(i, 0, totalBeat * 10);
+    loc.y += shake * noise(i, 10, totalBeat * 10);
+    loc.z += shake * noise(i, 20, totalBeat * 10);
     
     dot.cache_loc = loc;
     // COLORFUL STUFF

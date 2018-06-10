@@ -1,4 +1,4 @@
-<sync rows="3350">
+<sync rows="2528">
 	<tracks>
 		<track name="ambient">
 			<key row="22" value="50" interpolation="1"/>
@@ -18,6 +18,8 @@
 			<key row="124" value="50" interpolation="1"/>
 			<key row="127" value="33" interpolation="0"/>
 			<key row="128" value="50" interpolation="0"/>
+			<key row="2432" value="50" interpolation="1"/>
+			<key row="2496" value="0" interpolation="0"/>
 		</track>
 		<track name="directional">
 			<key row="22" value="50" interpolation="1"/>
@@ -36,7 +38,9 @@
 			<key row="123" value="25" interpolation="0"/>
 			<key row="124" value="50" interpolation="1"/>
 			<key row="127" value="33" interpolation="0"/>
-			<key row="128" value="50" interpolation="0"/>
+			<key row="128" value="50" interpolation="3"/>
+			<key row="2432" value="50" interpolation="1"/>
+			<key row="2496" value="0" interpolation="0"/>
 		</track>
 		<track name="blink">
 			<key row="128" value="255" interpolation="1"/>
@@ -219,7 +223,7 @@
 			<key row="839" value="128" interpolation="0"/>
 			<key row="840" value="255" interpolation="1"/>
 			<key row="847" value="128" interpolation="0"/>
-			<key row="848" value="255" interpolation="1"/>
+			<key row="848" value="128" interpolation="1"/>
 			<key row="855" value="128" interpolation="0"/>
 			<key row="856" value="255" interpolation="1"/>
 			<key row="863" value="128" interpolation="0"/>
@@ -615,6 +619,136 @@
 			<key row="2423" value="128" interpolation="0"/>
 			<key row="2424" value="255" interpolation="1"/>
 			<key row="2431" value="128" interpolation="0"/>
+		</track>
+		<track name="shake">
+			<key row="848" value="0" interpolation="3"/>
+			<key row="895" value="5" interpolation="1"/>
+			<key row="899" value="0" interpolation="0"/>
+			<key row="1920" value="3" interpolation="1"/>
+			<key row="1927" value="0" interpolation="0"/>
+			<key row="1928" value="3" interpolation="1"/>
+			<key row="1935" value="0" interpolation="0"/>
+			<key row="1936" value="3" interpolation="1"/>
+			<key row="1943" value="0" interpolation="0"/>
+			<key row="1944" value="3" interpolation="1"/>
+			<key row="1951" value="0" interpolation="0"/>
+			<key row="1952" value="3" interpolation="1"/>
+			<key row="1959" value="0" interpolation="0"/>
+			<key row="1960" value="3" interpolation="1"/>
+			<key row="1967" value="0" interpolation="0"/>
+			<key row="1968" value="3" interpolation="1"/>
+			<key row="1975" value="0" interpolation="0"/>
+			<key row="1976" value="3" interpolation="1"/>
+			<key row="1983" value="0" interpolation="0"/>
+			<key row="1984" value="3" interpolation="1"/>
+			<key row="1991" value="0" interpolation="0"/>
+			<key row="1992" value="3" interpolation="1"/>
+			<key row="1999" value="0" interpolation="0"/>
+			<key row="2000" value="3" interpolation="1"/>
+			<key row="2007" value="0" interpolation="0"/>
+			<key row="2008" value="3" interpolation="1"/>
+			<key row="2015" value="0" interpolation="0"/>
+			<key row="2016" value="3" interpolation="1"/>
+			<key row="2023" value="0" interpolation="0"/>
+			<key row="2024" value="3" interpolation="1"/>
+			<key row="2031" value="0" interpolation="0"/>
+			<key row="2032" value="3" interpolation="1"/>
+			<key row="2039" value="0" interpolation="0"/>
+			<key row="2040" value="3" interpolation="1"/>
+			<key row="2047" value="0" interpolation="0"/>
+			<key row="2048" value="3" interpolation="1"/>
+			<key row="2055" value="0" interpolation="0"/>
+			<key row="2056" value="3" interpolation="1"/>
+			<key row="2063" value="0" interpolation="0"/>
+			<key row="2064" value="3" interpolation="1"/>
+			<key row="2071" value="0" interpolation="0"/>
+			<key row="2072" value="3" interpolation="1"/>
+			<key row="2079" value="0" interpolation="0"/>
+			<key row="2080" value="3" interpolation="1"/>
+			<key row="2087" value="0" interpolation="0"/>
+			<key row="2088" value="3" interpolation="1"/>
+			<key row="2095" value="0" interpolation="0"/>
+			<key row="2096" value="3" interpolation="1"/>
+			<key row="2103" value="0" interpolation="0"/>
+			<key row="2104" value="3" interpolation="1"/>
+			<key row="2111" value="0" interpolation="0"/>
+			<key row="2112" value="3" interpolation="1"/>
+			<key row="2119" value="0" interpolation="0"/>
+			<key row="2120" value="3" interpolation="1"/>
+			<key row="2127" value="0" interpolation="0"/>
+			<key row="2128" value="3" interpolation="1"/>
+			<key row="2135" value="0" interpolation="0"/>
+			<key row="2136" value="3" interpolation="1"/>
+			<key row="2143" value="0" interpolation="0"/>
+			<key row="2144" value="3" interpolation="1"/>
+			<key row="2151" value="0" interpolation="0"/>
+			<key row="2152" value="3" interpolation="1"/>
+			<key row="2159" value="0" interpolation="0"/>
+			<key row="2160" value="3" interpolation="1"/>
+			<key row="2167" value="0" interpolation="0"/>
+			<key row="2168" value="3" interpolation="1"/>
+			<key row="2175" value="0" interpolation="0"/>
+			<key row="2176" value="3" interpolation="1"/>
+			<key row="2183" value="0" interpolation="0"/>
+			<key row="2184" value="3" interpolation="1"/>
+			<key row="2191" value="0" interpolation="0"/>
+			<key row="2192" value="3" interpolation="1"/>
+			<key row="2199" value="0" interpolation="0"/>
+			<key row="2200" value="3" interpolation="1"/>
+			<key row="2207" value="0" interpolation="0"/>
+			<key row="2208" value="3" interpolation="1"/>
+			<key row="2215" value="0" interpolation="0"/>
+			<key row="2216" value="3" interpolation="1"/>
+			<key row="2223" value="0" interpolation="0"/>
+			<key row="2224" value="3" interpolation="1"/>
+			<key row="2231" value="0" interpolation="0"/>
+			<key row="2232" value="3" interpolation="1"/>
+			<key row="2239" value="0" interpolation="0"/>
+			<key row="2240" value="3" interpolation="1"/>
+			<key row="2247" value="0" interpolation="0"/>
+			<key row="2248" value="3" interpolation="1"/>
+			<key row="2255" value="0" interpolation="0"/>
+			<key row="2256" value="3" interpolation="1"/>
+			<key row="2263" value="0" interpolation="0"/>
+			<key row="2264" value="3" interpolation="1"/>
+			<key row="2271" value="0" interpolation="0"/>
+			<key row="2272" value="3" interpolation="1"/>
+			<key row="2279" value="0" interpolation="0"/>
+			<key row="2280" value="3" interpolation="1"/>
+			<key row="2287" value="0" interpolation="0"/>
+			<key row="2288" value="3" interpolation="1"/>
+			<key row="2295" value="0" interpolation="0"/>
+			<key row="2296" value="3" interpolation="1"/>
+			<key row="2303" value="0" interpolation="0"/>
+			<key row="2304" value="3" interpolation="1"/>
+			<key row="2311" value="0" interpolation="0"/>
+			<key row="2312" value="3" interpolation="1"/>
+			<key row="2319" value="0" interpolation="0"/>
+			<key row="2320" value="3" interpolation="1"/>
+			<key row="2327" value="0" interpolation="0"/>
+			<key row="2328" value="3" interpolation="1"/>
+			<key row="2335" value="0" interpolation="0"/>
+			<key row="2336" value="3" interpolation="1"/>
+			<key row="2343" value="0" interpolation="0"/>
+			<key row="2344" value="3" interpolation="1"/>
+			<key row="2351" value="0" interpolation="0"/>
+			<key row="2352" value="3" interpolation="1"/>
+			<key row="2359" value="0" interpolation="0"/>
+			<key row="2360" value="3" interpolation="1"/>
+			<key row="2367" value="0" interpolation="0"/>
+			<key row="2368" value="3" interpolation="1"/>
+			<key row="2375" value="0" interpolation="0"/>
+			<key row="2376" value="3" interpolation="1"/>
+			<key row="2383" value="0" interpolation="0"/>
+			<key row="2384" value="0" interpolation="3"/>
+			<key row="2431" value="10" interpolation="1"/>
+			<key row="2434" value="0" interpolation="0"/>
+		</track>
+		<track name="waviness">
+			<key row="1408" value="0" interpolation="1"/>
+			<key row="1416" value="1" interpolation="0"/>
+			<key row="1920" value="1" interpolation="1"/>
+			<key row="1936" value="0" interpolation="0"/>
 		</track>
 	</tracks>
 	<bookmarks/>

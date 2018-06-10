@@ -43,7 +43,11 @@ PathStop[] path = new PathStop[] {
   new PathStop(10, new PVector(0, -150, 200), new PVector(0, -100, 0), new PVector(), null),
   new PathStop(32, new PVector(0, -150, 200), new PVector(0, -100, 0), new PVector(), null),
   new PathStop(48, new PVector(130, -210, 175), new PVector(50, -20, -45), new PVector(0, -100, 0), new PVector(), null),
-  new PathStop(64, new PVector(180, -240, 70), new PVector(0, 0, 0), new PVector(0, -100, 0), new PVector(), null)
+  new PathStop(64, new PVector(180, -240, 70), new PVector(0, 0, -200), new PVector(0, -100, 0), new PVector(), null),
+  new PathStop(80, new PVector(-180, -170, 70), new PVector(0, 20, 200), new PVector(0, -100, 0), new PVector(), null),
+  new PathStop(96, new PVector(70, -90, 180), new PVector(200, 0, 0), new PVector(0, -100, 0), new PVector(), null),
+  new PathStop(304, new PVector(70, -90, 180), new PVector(0, -100, 0), new PVector(), null),
+  new PathStop(312, new PVector(35, -90, 90), new PVector(0, 200, 0), new PVector(), null),
 };
 
 int camIndex = 0;
@@ -89,8 +93,9 @@ void updateCamera(float time) {
     PVector pos, center;
     if (to.cubic) {
       pos = interpolateCubic(from.pos, from.velocity, to.pos, to.velocity, t);
+      println(from.pos, from.velocity, to.pos, to.velocity);
+      println(t, pos, lastVel, lastVel.mag());
       center = interpolateCubic(from.center, from.centerVelocity, to.center, to.centerVelocity, t);
-      //println(t, pos, lastVel, lastVel.mag());
     } else {
       pos = interpolateLinear(from.pos, to.pos, t);
       center = interpolateLinear(from.center, to.center, t);

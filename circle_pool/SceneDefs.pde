@@ -3,15 +3,28 @@ Scene[] scenes;
 void createScenes() {
   scenes = new Scene[] {
     new IntroScene(-100),
-    new TextScene(16, "graffathon", 0, -100, 0, PI / 12, PI / 6, 30, 0),
-    new TextScene(32, "demonimi", 0, -100, -70, PI / 6, PI / 2, 40, 1),
-    new NodeScene(48, nodes[0]),
-    new NodeScene(64, nodes[1]),
-    new NodeScene(80, nodes[2]),
-    new NodeScene(96, nodes[3]),
-    new NodeScene(112, nodes[4]),
-    new NodeScene(128, nodes[5]),
-    new NodeScene(144, nodes[6]),
+    new NodeScene(16, nodes[0]),
+    new TextScene(32, "graffathon", 0, -100, 0, PI / 12, PI / 6, 30, 0),
+    new TextScene(48, "demonimi", 0, -100, -70, PI / 6, PI / 2, 40, 1),
+    new NodeScene(64, nodes[0]),
+    new NodeScene(80, nodes[1]),
+    new NodeScene(96, nodes[2]),
+    new NodeScene(112, nodes[3]),
+    new NodeScene(128, nodes[4]),
+    new NodeScene(144, nodes[5]),
+    new NodeScene(160, nodes[6]),
+    new TextScene(240, "purkka", 0, -100, 0, PI / 6, PI / 4, 40, 0),
+    new TextScene(248, "herpior", 0, -100, 0, PI / 6, PI / 4, 40, 0),
+    new TextScene(256, "cubanfrog", 0, -100, 0, PI / 6, PI / 4, 40, 0),
+    new TextScene(264, "randomjaba", 0, -100, 0, PI / 6, PI / 4, 40, 0),
+    new TextScene(272, "greetz to", 0, -100, 0, PI / 6, PI / 4, 40, 0),
+    new TextScene(276, "greet I", 0, -100, 0, PI / 6, PI / 4, 40, 0),
+    new TextScene(280, "greet II", 0, -100, 0, PI / 6, PI / 4, 40, 0),
+    new TextScene(284, "greet III", 0, -100, 0, PI / 6, PI / 4, 40, 0),
+    new TextScene(288, "greet IV", 0, -100, 0, PI / 6, PI / 4, 40, 0),
+    new TextScene(292, "greet V", 0, -100, 0, PI / 6, PI / 4, 40, 0),
+    new TextScene(296, "thx for watching", 0, -100, 0, PI / 6, PI / 4, 40, 0),
+    new IntroScene(304)
   };
 }
 
